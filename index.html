@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hệ thống Quản lý Nhà hàng World</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="database-page">
+      <section class="database-hero">
+        <p class="eyebrow">Đề tài tốt nghiệp</p>
+        <h1>Hệ thống Quản lý Nhà hàng đa nền tảng</h1>
+        <p>
+          Giai đoạn hiện tại tập trung hoàn thiện Backend và Database trước:
+          Laravel, MySQL/MariaDB, dữ liệu mẫu tiếng Việt có dấu và file SQL import trực tiếp vào phpMyAdmin.
+        </p>
+      </section>
+
+      <section class="database-grid" id="summaryGrid"></section>
+
+      <section class="panel database-panel">
+        <div class="panel-head">
+          <h2>Các bảng dữ liệu đã thiết kế</h2>
+          <span>Chuẩn hóa dữ liệu, có khóa chính và khóa ngoại</span>
+        </div>
+        <div class="data-table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Bảng</th>
+                <th>Chức năng</th>
+                <th>Quan hệ chính</th>
+              </tr>
+            </thead>
+            <tbody id="databaseTable"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel database-panel">
+        <div class="panel-head">
+          <h2>Dữ liệu mẫu tiêu biểu</h2>
+          <span>Khách hàng, danh mục, món ăn và đặt bàn</span>
+        </div>
+        <div class="sample-list" id="sampleList"></div>
+      </section>
+
+      <section class="panel database-panel">
+        <div class="panel-head">
+          <h2>Hướng dẫn kiểm tra</h2>
+          <span>XAMPP và Laravel</span>
+        </div>
+        <ol class="steps">
+          <li>Mở XAMPP, bật Apache và MySQL.</li>
+          <li>Vào phpMyAdmin và import file <strong>database-schema.sql</strong>.</li>
+          <li>Nếu chạy Laravel, cài Composer rồi chạy migrate và seed theo README.</li>
+          <li>Kiểm tra endpoint <strong>/api/kiem-tra-du-lieu</strong> sau khi backend chạy.</li>
+        </ol>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
