@@ -13,14 +13,14 @@ Dự án được xây dựng theo cấu trúc Laravel 11, có thể chạy trê
 ## Công nghệ sử dụng
 
 - Laravel 11
-- PHP 8.2 trở lên
+- PHP 8.2
 - MySQL/MariaDB trên XAMPP
 - Bootstrap 5
 - Composer
 - Git/GitHub
 - Charset: `utf8mb4`
 - Collation: `utf8mb4_unicode_ci`
-- Ngôn ngữ giao diện và dữ liệu: tiếng Việt có dấu
+- Ngôn ngữ giao diện và dữ liệu: tiếng Việt
 
 ## Chức năng đã xây dựng
 
@@ -224,7 +224,3 @@ password
 6. Xây dựng REST API cho ứng dụng Android.
 7. Tích hợp chatbot hỗ trợ khách hàng.
 8. Phát triển ứng dụng Android kết nối với backend Laravel.
-
-## Ghi chú bảo mật
-
-File `.env` không được đưa lên GitHub. Khi clone project về máy khác, cần tạo file `.env` từ `.env.example` và cấu hình lại thông tin database phù hợp với máy đang chạy.
