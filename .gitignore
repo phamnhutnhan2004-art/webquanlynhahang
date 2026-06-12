@@ -10,6 +10,21 @@
 .env.backup
 .env.production
 
+# Project documents and temporary files should stay out of GitHub.
+/README.md
+/HUONG_DAN*.md
+/BAO_CAO*.md
+/database-schema.sql
+/docs
+/tai-lieu
+*.doc
+*.docx
+*.pdf
+*.bak
+*.backup
+*.tmp
+*~
+
 /Homestead.json
 /Homestead.yaml
 /auth.json
