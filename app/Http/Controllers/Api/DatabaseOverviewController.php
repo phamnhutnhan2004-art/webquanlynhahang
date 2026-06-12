@@ -7,6 +7,8 @@ use App\Models\Category;
 use App\Models\ChatbotLog;
 use App\Models\Customer;
 use App\Models\Employee;
+use App\Models\GalleryImage;
+use App\Models\MenuGallery;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Payment;
@@ -36,6 +38,8 @@ class DatabaseOverviewController extends Controller
                 'order_items' => OrderItem::count(),
                 'payments' => Payment::count(),
                 'chatbot_logs' => ChatbotLog::count(),
+                'menu_galleries' => MenuGallery::count(),
+                'gallery_images' => GalleryImage::count(),
             ],
             'categories' => Category::query()
                 ->select('id', 'name', 'description', 'status')

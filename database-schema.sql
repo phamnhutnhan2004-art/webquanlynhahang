@@ -470,3 +470,31 @@ INSERT INTO `chatbot_histories` (`id`, `customer_id`, `reservation_id`, `session
 INSERT INTO `chatbot_logs` (`id`, `customer_id`, `reservation_id`, `order_id`, `session_id`, `sender`, `message`, `intent`, `confidence`, `created_at`, `updated_at`)
 SELECT `id`, `customer_id`, `reservation_id`, `reservation_id`, `session_id`, `sender`, `message`, `intent`, `confidence`, `created_at`, `updated_at`
 FROM `chatbot_histories`;
+
+CREATE TABLE IF NOT EXISTS `menu_galleries` (
+  `id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `title` VARCHAR(150) NOT NULL,
+  `description` VARCHAR(255) NULL,
+  `image` VARCHAR(255) NOT NULL,
+  `created_at` TIMESTAMP NULL,
+  `updated_at` TIMESTAMP NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `gallery_images` (
+  `id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `title` VARCHAR(150) NOT NULL,
+  `image` VARCHAR(255) NOT NULL,
+  `created_at` TIMESTAMP NULL,
+  `updated_at` TIMESTAMP NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT IGNORE INTO `menu_galleries` (`id`, `title`, `description`, `image`, `created_at`, `updated_at`) VALUES
+(1, 'Menu Hải sản', 'Các món hải sản và món chính nổi bật của nhà hàng.', 'images/ca-chep-sot-cai-xanh.png', NOW(), NOW()),
+(2, 'Menu Món cay', 'Gợi ý món cay dùng cho bữa tối và tiệc nhóm.', 'images/ga-xao-cay.png', NOW(), NOW()),
+(3, 'Menu Tiệc cưới', 'Không gian và thực đơn phù hợp tiệc gia đình, tiệc cưới.', 'images/restaurant-interior.png', NOW(), NOW());
+
+INSERT IGNORE INTO `gallery_images` (`id`, `title`, `image`, `created_at`, `updated_at`) VALUES
+(1, 'Không gian mặt tiền', 'images/hero-restaurant.png', NOW(), NOW()),
+(2, 'Không gian bàn tiệc', 'images/restaurant-interior.png', NOW(), NOW()),
+(3, 'Gà xào cay', 'images/ga-xao-cay.png', NOW(), NOW()),
+(4, 'Cá chép sốt cải xanh', 'images/ca-chep-sot-cai-xanh.png', NOW(), NOW());

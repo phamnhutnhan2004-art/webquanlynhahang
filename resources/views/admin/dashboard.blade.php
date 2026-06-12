@@ -3,56 +3,100 @@
 @section('title', 'Admin Dashboard')
 
 @section('content')
-<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
-    <div>
-        <h1 class="h3 mb-1">Dashboard Admin</h1>
-        <p class="text-muted mb-0">Tổng quan hệ thống quản lý nhà hàng.</p>
+<div class="container">
+<section class="page-hero mb-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3">
+        <div>
+            <div class="eyebrow mb-2">Quản trị hệ thống</div>
+            <h1 class="display-6 fw-bold mb-2">Tổng quan vận hành Nhà hàng World</h1>
+            <p class="lead mb-0">Theo dõi dữ liệu chính và đi nhanh tới các khu vực quản lý.</p>
+        </div>
+        <div class="btn-group flex-wrap">
+            <a class="btn btn-light" href="{{ route('admin.section', 'products') }}">Món ăn</a>
+            <a class="btn btn-outline-light" href="{{ route('admin.section', 'tables') }}">Bàn ăn</a>
+            <a class="btn btn-outline-light" href="{{ route('admin.section', 'orders') }}">Đơn hàng</a>
+            <a class="btn btn-outline-light" href="{{ route('admin.section', 'menu-galleries') }}">Menu ảnh</a>
+        </div>
     </div>
-    <div class="btn-group flex-wrap">
-        <a class="btn btn-outline-primary" href="{{ route('admin.section', 'employees') }}">Nhân viên</a>
-        <a class="btn btn-outline-primary" href="{{ route('admin.section', 'products') }}">Món ăn</a>
-        <a class="btn btn-outline-primary" href="{{ route('admin.section', 'categories') }}">Danh mục</a>
-        <a class="btn btn-outline-primary" href="{{ route('admin.section', 'tables') }}">Bàn ăn</a>
-        <a class="btn btn-outline-primary" href="{{ route('admin.section', 'orders') }}">Đơn hàng</a>
-        <a class="btn btn-outline-primary" href="{{ route('admin.section', 'stats') }}">Thống kê</a>
-    </div>
-</div>
+</section>
 
 <div class="row g-3 mb-4">
     <div class="col-md-6 col-xl-3">
-        <div class="card stat-card"><div class="card-body"><div class="text-muted">Tổng số món ăn</div><div class="display-6 fw-bold">{{ $totalProducts }}</div></div></div>
+        <div class="card stat-card"><div class="card-body">
+            <div class="text-muted">Tổng số món ăn</div>
+            <div class="stat-value">{{ $totalProducts }}</div>
+        </div></div>
     </div>
     <div class="col-md-6 col-xl-3">
-        <div class="card stat-card"><div class="card-body"><div class="text-muted">Tổng số đơn hàng</div><div class="display-6 fw-bold">{{ $totalOrders }}</div></div></div>
+        <div class="card stat-card"><div class="card-body">
+            <div class="text-muted">Tổng số đơn hàng</div>
+            <div class="stat-value">{{ $totalOrders }}</div>
+        </div></div>
     </div>
     <div class="col-md-6 col-xl-3">
-        <div class="card stat-card"><div class="card-body"><div class="text-muted">Tổng doanh thu</div><div class="h2 fw-bold">{{ number_format((float) $totalRevenue) }}</div><div class="small text-muted">VND</div></div></div>
+        <div class="card stat-card"><div class="card-body">
+            <div class="text-muted">Doanh thu ghi nhận</div>
+            <div class="h2 fw-bold mb-0">{{ number_format((float) $totalRevenue) }}</div>
+            <div class="small text-muted">VND</div>
+        </div></div>
     </div>
     <div class="col-md-6 col-xl-3">
-        <div class="card stat-card"><div class="card-body"><div class="text-muted">Bàn đang sử dụng</div><div class="display-6 fw-bold">{{ $activeTables }}</div></div></div>
+        <div class="card stat-card"><div class="card-body">
+            <div class="text-muted">Đặt bàn chờ xác nhận</div>
+            <div class="stat-value">{{ $pendingReservations }}</div>
+        </div></div>
     </div>
 </div>
 
-<div class="card">
-    <div class="card-body">
-        <h2 class="h5 mb-3">Đơn hàng gần đây</h2>
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-light"><tr><th>Mã đơn</th><th>Trạng thái</th><th>Tổng tiền</th><th>Thời gian</th></tr></thead>
-                <tbody>
-                @forelse($recentOrders as $order)
-                    <tr>
-                        <td>{{ $order->order_code }}</td>
-                        <td><span class="badge text-bg-secondary">{{ $order->status }}</span></td>
-                        <td>{{ number_format((float) $order->total_amount) }} VND</td>
-                        <td>{{ optional($order->ordered_at)->format('d/m/Y H:i') }}</td>
-                    </tr>
-                @empty
-                    <tr><td colspan="4" class="text-muted">Chưa có đơn hàng.</td></tr>
-                @endforelse
-                </tbody>
-            </table>
+<div class="row g-4">
+    <section class="col-lg-8">
+        <div class="card">
+            <div class="card-body">
+                <div class="app-section-title">
+                    <div>
+                        <h2 class="h5 mb-1">Đơn hàng gần đây</h2>
+                        <p class="text-muted mb-0">Các đơn mới nhất trong hệ thống.</p>
+                    </div>
+                    <a class="btn btn-sm btn-outline-primary" href="{{ route('admin.section', 'orders') }}">Xem tất cả</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light"><tr><th>Mã đơn</th><th>Khách</th><th>Bàn</th><th>Tổng tiền</th><th>Trạng thái</th></tr></thead>
+                        <tbody>
+                        @forelse($recentOrders as $order)
+                            <tr>
+                                <td><strong>{{ $order->order_code }}</strong></td>
+                                <td>{{ $order->customer?->full_name ?? 'Khách lẻ' }}</td>
+                                <td>{{ $order->table?->table_name ?? '-' }}</td>
+                                <td>{{ number_format((float) $order->total_amount) }} VND</td>
+                                <td><span class="status-badge">{{ $order->status }}</span></td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="5" class="text-muted">Chưa có đơn hàng.</td></tr>
+                        @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-    </div>
+    </section>
+
+    <section class="col-lg-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h2 class="h5 mb-3">Quản lý nhanh</h2>
+                <div class="d-grid gap-2">
+                    <a class="btn btn-outline-primary text-start" href="{{ route('admin.section', 'categories') }}">Danh mục món ăn</a>
+                    <a class="btn btn-outline-primary text-start" href="{{ route('admin.section', 'products') }}">Món ăn / sản phẩm</a>
+                    <a class="btn btn-outline-primary text-start" href="{{ route('admin.section', 'tables') }}">Bàn ăn</a>
+                    <a class="btn btn-outline-primary text-start" href="{{ route('admin.section', 'menu-galleries') }}">Menu hình ảnh</a>
+                    <a class="btn btn-outline-primary text-start" href="{{ route('admin.section', 'gallery-images') }}">Thư viện ảnh</a>
+                    <a class="btn btn-outline-primary text-start" href="{{ route('admin.section', 'employees') }}">Nhân viên</a>
+                    <a class="btn btn-outline-primary text-start" href="{{ route('admin.section', 'stats') }}">Thống kê doanh thu</a>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
 </div>
 @endsection

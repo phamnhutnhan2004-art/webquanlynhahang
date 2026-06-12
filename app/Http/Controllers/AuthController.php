@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Customer;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -52,15 +53,27 @@ class AuthController extends Controller
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ], $this->messages());
 
-        $user = User::create([
-            'name' => $data['name'],
-            'full_name' => $data['name'],
-            'email' => $data['email'],
-            'phone' => $data['phone'],
-            'address' => $data['address'] ?? null,
-            'password' => Hash::make($data['password']),
-            'role_id' => 3,
-        ]);
+        $user = DB::transaction(function () use ($data): User {
+            $user = User::create([
+                'name' => $data['name'],
+                'full_name' => $data['name'],
+                'email' => $data['email'],
+                'phone' => $data['phone'],
+                'address' => $data['address'] ?? null,
+                'password' => Hash::make($data['password']),
+                'role_id' => 3,
+            ]);
+
+            Customer::create([
+                'user_id' => $user->id,
+                'full_name' => $data['name'],
+                'phone' => $data['phone'],
+                'email' => $data['email'],
+                'address' => $data['address'] ?? null,
+            ]);
+
+            return $user;
+        });
 
         Auth::login($user);
         $request->session()->regenerate();

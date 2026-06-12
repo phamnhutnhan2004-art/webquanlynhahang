@@ -3,43 +3,199 @@
 @section('title', 'Nhà hàng World')
 
 @section('content')
-<div class="row align-items-center g-4 mb-4">
-    <div class="col-lg-7">
-        <h1 class="display-6 fw-bold mb-3">Website Quản lý Nhà hàng World</h1>
-        <p class="lead text-muted mb-0">Quản lý menu, đặt bàn, đơn hàng, thanh toán và chatbot hỗ trợ khách hàng.</p>
-    </div>
-    <div class="col-lg-5">
-        <div class="card">
-            <div class="card-body">
-                <h2 class="h5">Danh mục món ăn</h2>
+<section class="hero-full">
+    <div class="container">
+        <div class="row align-items-end g-4">
+            <div class="col-lg-7">
+                <div class="eyebrow mb-3">Ẩm thực Việt cao cấp</div>
+                <h1 class="display-3 fw-black fw-bold mb-3">Nhà hàng World</h1>
+                <p class="lead mb-4">Không gian sang trọng, thực đơn chọn lọc và hệ thống đặt bàn trực tuyến dành cho những bữa ăn đáng nhớ.</p>
                 <div class="d-flex flex-wrap gap-2">
-                    @forelse($categories as $category)
-                        <span class="badge text-bg-light border">{{ $category->name }}: {{ $category->products_count }}</span>
-                    @empty
-                        <span class="text-muted">Chưa có danh mục.</span>
-                    @endforelse
+                    @guest
+                        <a class="btn btn-primary btn-lg" href="{{ route('register') }}">Đặt bàn nhanh</a>
+                        <a class="btn btn-outline-light btn-lg" href="#mon-an">Xem thực đơn</a>
+                    @else
+                        <a class="btn btn-primary btn-lg" href="{{ auth()->user()->isAdmin() ? route('admin.dashboard') : (auth()->user()->isStaff() ? route('staff.dashboard') : route('customer.dashboard')) }}">Vào dashboard</a>
+                        <a class="btn btn-outline-light btn-lg" href="#menu-hinh-anh">Menu nhà hàng</a>
+                    @endguest
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="row g-3">
+                    <div class="col-4">
+                        <div class="card stat-card"><div class="card-body">
+                            <div class="text-muted">Món bán</div>
+                            <div class="stat-value">{{ $totalProducts }}</div>
+                        </div></div>
+                    </div>
+                    <div class="col-4">
+                        <div class="card stat-card"><div class="card-body">
+                            <div class="text-muted">Bàn trống</div>
+                            <div class="stat-value">{{ $availableTables }}</div>
+                        </div></div>
+                    </div>
+                    <div class="col-4">
+                        <div class="card stat-card"><div class="card-body">
+                            <div class="text-muted">Đặt bàn</div>
+                            <div class="stat-value">{{ $totalReservations }}</div>
+                        </div></div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</section>
 
-<div class="row g-3">
-    @forelse($products as $product)
-        <div class="col-md-6 col-lg-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <div class="small text-muted">{{ $product->category?->name }}</div>
-                    <h2 class="h5 mt-2">{{ $product->name }}</h2>
-                    <p class="text-muted">{{ $product->description }}</p>
-                    <div class="fw-bold">{{ number_format((float) $product->price) }} VND</div>
+<section id="gioi-thieu" class="section-pad">
+    <div class="container">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-6">
+                <img class="gallery-img rounded-2 shadow" src="{{ asset('images/restaurant-interior.png') }}" alt="Không gian nhà hàng World">
+            </div>
+            <div class="col-lg-6">
+                <div class="eyebrow mb-2">Giới thiệu</div>
+                <h2 class="display-6 fw-bold mb-3">Không gian ấm cúng, phục vụ chỉn chu, món ăn đậm vị Việt.</h2>
+                <p class="text-muted fs-5">Nhà hàng World kết hợp phong cách gỗ ấm, ánh sáng vàng và mảng xanh tự nhiên để tạo nên trải nghiệm sang trọng nhưng gần gũi. Website hỗ trợ khách xem menu, đặt bàn và theo dõi lịch đặt tiện lợi.</p>
+                <div class="d-flex flex-wrap gap-2 mt-3">
+                    <span class="status-badge">Hải sản tươi</span>
+                    <span class="status-badge">Tiệc gia đình</span>
+                    <span class="status-badge">Đặt bàn online</span>
                 </div>
             </div>
         </div>
-    @empty
-        <div class="col-12">
-            <div class="alert alert-info">Chưa có sản phẩm trong menu.</div>
+    </div>
+</section>
+
+<section id="danh-muc" class="section-pad pt-0">
+    <div class="container">
+        <div class="section-title">
+            <div>
+                <div class="eyebrow">Danh mục</div>
+                <h2 class="h1 mb-0">Danh mục món ăn</h2>
+            </div>
         </div>
-    @endforelse
-</div>
+        <div class="d-flex flex-wrap gap-2">
+            @forelse($categories as $category)
+                <span class="status-badge">{{ $category->name }}: {{ $category->products_count }} món</span>
+            @empty
+                <span class="text-muted">Chưa có danh mục.</span>
+            @endforelse
+        </div>
+    </div>
+</section>
+
+<section id="mon-an" class="section-pad pt-0">
+    <div class="container">
+        <div class="section-title">
+            <div>
+                <div class="eyebrow">Thực đơn</div>
+                <h2 class="h1 mb-0">Món ăn nổi bật</h2>
+            </div>
+            @guest
+                <a class="btn btn-outline-primary" href="{{ route('login') }}">Đăng nhập để đặt bàn</a>
+            @else
+                <a class="btn btn-outline-primary" href="{{ route('customer.dashboard') }}">Đặt bàn nhanh</a>
+            @endguest
+        </div>
+        <div class="row g-4">
+            @forelse($products as $product)
+                <div class="col-md-6 col-xl-4">
+                    <article class="card food-card h-100">
+                        <img class="food-img" src="{{ $product->image_url }}" alt="{{ $product->name }}">
+                        <div class="card-body d-flex flex-column">
+                            <div class="small text-muted">{{ $product->category?->name }}</div>
+                            <h3 class="h5 mt-2">{{ $product->name }}</h3>
+                            <p class="text-muted flex-grow-1">{{ $product->description }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <strong class="gold-text">{{ number_format((float) $product->price) }} VNĐ</strong>
+                                <span class="status-badge">{{ $product->status === 'available' ? 'Đang bán' : $product->status }}</span>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            @empty
+                <div class="col-12"><div class="muted-box">Chưa có sản phẩm trong menu.</div></div>
+            @endforelse
+        </div>
+    </div>
+</section>
+
+<section id="menu-hinh-anh" class="section-pad pt-0">
+    <div class="container">
+        <div class="section-title">
+            <div>
+                <div class="eyebrow">Menu Nhà Hàng</div>
+                <h2 class="h1 mb-0">Menu hình ảnh</h2>
+            </div>
+        </div>
+        <div class="row g-4">
+            @forelse($menuGalleries as $menu)
+                <div class="col-md-6 col-xl-3">
+                    <article class="card media-card h-100">
+                        @if(str_ends_with(strtolower($menu->image), '.pdf'))
+                            <div class="muted-box h-100 d-flex flex-column justify-content-center">
+                                <h3 class="h5">{{ $menu->title }}</h3>
+                                <p class="text-muted">{{ $menu->description }}</p>
+                                <a class="btn btn-outline-primary" href="{{ $menu->image_url }}" target="_blank">Xem PDF</a>
+                            </div>
+                        @else
+                            <img class="media-img" src="{{ $menu->image_url }}" alt="{{ $menu->title }}">
+                            <div class="card-body">
+                                <h3 class="h5">{{ $menu->title }}</h3>
+                                <p class="text-muted mb-0">{{ $menu->description }}</p>
+                            </div>
+                        @endif
+                    </article>
+                </div>
+            @empty
+                <div class="col-12"><div class="muted-box">Chưa có menu hình ảnh.</div></div>
+            @endforelse
+        </div>
+    </div>
+</section>
+
+<section id="hinh-anh" class="section-pad pt-0">
+    <div class="container">
+        <div class="section-title">
+            <div>
+                <div class="eyebrow">Không gian</div>
+                <h2 class="h1 mb-0">Hình ảnh nhà hàng</h2>
+            </div>
+        </div>
+        <div class="row g-3">
+            @forelse($galleryImages as $image)
+                <div class="col-md-6 col-xl-4">
+                    <article class="card media-card">
+                        <img class="gallery-img" src="{{ $image->image_url }}" alt="{{ $image->title }}">
+                        <div class="card-body"><strong>{{ $image->title }}</strong></div>
+                    </article>
+                </div>
+            @empty
+                <div class="col-12"><div class="muted-box">Chưa có ảnh nhà hàng.</div></div>
+            @endforelse
+        </div>
+    </div>
+</section>
+
+<section id="lien-he" class="section-pad pt-0">
+    <div class="container">
+        <div class="contact-band">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-8">
+                    <div class="eyebrow mb-2">Liên hệ</div>
+                    <h2 class="h1 fw-bold mb-3">Sẵn sàng cho bữa ăn tiếp theo?</h2>
+                    <p class="fs-5 mb-2">Địa chỉ: 100k Đ. Võ Văn Kiệt, Phường Long Châu, Vĩnh Long</p>
+                    <p class="fs-5 mb-0">Hotline: 0918 118 544</p>
+                </div>
+                <div class="col-lg-4 d-grid">
+                    @guest
+                        <a class="btn btn-primary btn-lg" href="{{ route('register') }}">Đặt bàn ngay</a>
+                    @else
+                        <a class="btn btn-primary btn-lg" href="{{ route('customer.dashboard') }}">Mở trang đặt bàn</a>
+                    @endguest
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 @endsection
