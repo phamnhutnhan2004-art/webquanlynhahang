@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LiveOrderController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/storage/{path}', function (string $path) {
@@ -46,6 +47,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
 Route::middleware(['auth', 'staff'])->prefix('nhan-vien')->name('staff.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'staff'])->name('dashboard');
+    Route::get('/bep', [LiveOrderController::class, 'kitchen'])->name('kitchen');
+    Route::get('/thu-ngan', [LiveOrderController::class, 'cashier'])->name('cashier');
+    Route::get('/live/orders', [LiveOrderController::class, 'stream'])->name('live-orders.stream');
     Route::patch('/dat-ban/{reservation}', [DashboardController::class, 'updateReservationStatus'])->name('reservations.update-status');
     Route::patch('/don-hang/{order}', [DashboardController::class, 'updateOrderStatus'])->name('orders.update-status');
 });

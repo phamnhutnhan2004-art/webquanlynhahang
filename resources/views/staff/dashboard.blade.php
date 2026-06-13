@@ -10,6 +10,11 @@
     <p class="lead mb-0">Cập nhật trạng thái ngay tại bảng để dữ liệu vận hành luôn mới.</p>
 </div>
 
+<div class="d-flex flex-wrap gap-2 mb-4">
+    <a class="btn btn-primary" href="{{ route('staff.kitchen') }}">Mở màn hình Bếp</a>
+    <a class="btn btn-outline-primary" href="{{ route('staff.cashier') }}">Mở màn hình Thu ngân</a>
+</div>
+
 <div class="row g-4">
     <section class="col-xl-7">
         <div class="card h-100">

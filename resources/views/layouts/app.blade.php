@@ -225,10 +225,152 @@
             color: rgba(255, 255, 255, .78) !important;
         }
 
+        .chatbot-launcher {
+            position: fixed;
+            right: 1rem;
+            bottom: 1rem;
+            z-index: 1040;
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            border: 0;
+            background: var(--green);
+            color: #fff;
+            box-shadow: 0 18px 42px rgba(14, 59, 50, .32);
+            font-weight: 900;
+        }
+
+        .chatbot-panel {
+            position: fixed;
+            right: 1rem;
+            bottom: 5.4rem;
+            z-index: 1040;
+            display: none;
+            width: min(380px, calc(100vw - 2rem));
+            max-height: min(680px, calc(100vh - 7rem));
+            overflow: hidden;
+            background: #fffaf0;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            box-shadow: 0 24px 70px rgba(44, 27, 18, .22);
+        }
+
+        .chatbot-panel.is-open {
+            display: grid;
+            grid-template-rows: auto minmax(180px, 1fr) auto;
+        }
+
+        .chatbot-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: .75rem;
+            padding: .9rem 1rem;
+            background: var(--green);
+            color: #fff;
+        }
+
+        .chatbot-head strong {
+            display: block;
+            line-height: 1.1;
+        }
+
+        .chatbot-head span {
+            color: rgba(255, 255, 255, .76);
+            font-size: .82rem;
+        }
+
+        .chatbot-close {
+            width: 34px;
+            height: 34px;
+            border: 1px solid rgba(255, 255, 255, .32);
+            border-radius: 50%;
+            background: transparent;
+            color: #fff;
+            font-size: 1.2rem;
+            line-height: 1;
+        }
+
+        .chatbot-messages {
+            display: flex;
+            flex-direction: column;
+            gap: .65rem;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        .chatbot-message {
+            width: fit-content;
+            max-width: 88%;
+            border-radius: 8px;
+            padding: .65rem .75rem;
+            white-space: pre-line;
+            line-height: 1.45;
+        }
+
+        .chatbot-message.bot {
+            align-self: flex-start;
+            background: #fff;
+            border: 1px solid var(--line);
+        }
+
+        .chatbot-message.user {
+            align-self: flex-end;
+            background: var(--green);
+            color: #fff;
+        }
+
+        .chatbot-body {
+            border-top: 1px solid var(--line);
+            padding: .85rem;
+            background: rgba(255, 255, 255, .72);
+        }
+
+        .chatbot-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .45rem;
+            margin-bottom: .75rem;
+        }
+
+        .chatbot-booking {
+            display: none;
+            grid-template-columns: 1fr 1fr;
+            gap: .5rem;
+            margin-bottom: .75rem;
+        }
+
+        .chatbot-booking.is-open {
+            display: grid;
+        }
+
+        .chatbot-booking .wide {
+            grid-column: 1 / -1;
+        }
+
+        .chatbot-compose {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: .5rem;
+        }
+
         @media (max-width: 991.98px) {
             .hero-full {
                 min-height: 78vh;
                 margin-top: -1rem;
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            .chatbot-launcher {
+                right: .75rem;
+                bottom: .75rem;
+            }
+
+            .chatbot-panel {
+                right: .75rem;
+                bottom: 4.9rem;
+                width: calc(100vw - 1.5rem);
             }
         }
     </style>
@@ -251,7 +393,9 @@
                     @if(auth()->user()->isAdmin())
                         <li class="nav-item"><a class="nav-link {{ request()->routeIs('admin.*') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">Quản trị</a></li>
                     @elseif(auth()->user()->isStaff())
-                        <li class="nav-item"><a class="nav-link {{ request()->routeIs('staff.*') ? 'active' : '' }}" href="{{ route('staff.dashboard') }}">Nhân viên</a></li>
+                        <li class="nav-item"><a class="nav-link {{ request()->routeIs('staff.dashboard') ? 'active' : '' }}" href="{{ route('staff.dashboard') }}">Nhân viên</a></li>
+                        <li class="nav-item"><a class="nav-link {{ request()->routeIs('staff.kitchen') ? 'active' : '' }}" href="{{ route('staff.kitchen') }}">Bếp</a></li>
+                        <li class="nav-item"><a class="nav-link {{ request()->routeIs('staff.cashier') ? 'active' : '' }}" href="{{ route('staff.cashier') }}">Thu ngân</a></li>
                     @else
                         <li class="nav-item"><a class="nav-link {{ request()->routeIs('customer.*') ? 'active' : '' }}" href="{{ route('customer.dashboard') }}">Tài khoản</a></li>
                     @endif
@@ -293,6 +437,138 @@
     @yield('content')
 </main>
 
+<section class="chatbot-panel" id="chatbotPanel" aria-live="polite">
+    <div class="chatbot-head">
+        <div>
+            <strong>Chatbot hỗ trợ</strong>
+            <span>Giờ mở cửa, thực đơn, đặt bàn</span>
+        </div>
+        <button class="chatbot-close" type="button" id="chatbotClose" aria-label="Đóng chatbot">&times;</button>
+    </div>
+
+    <div class="chatbot-messages" id="chatbotMessages"></div>
+
+    <div class="chatbot-body">
+        <div class="chatbot-actions">
+            <button class="btn btn-outline-primary btn-sm" type="button" data-chatbot-message="Giờ mở cửa">Giờ mở cửa</button>
+            <button class="btn btn-outline-primary btn-sm" type="button" data-chatbot-message="Gửi thực đơn">Thực đơn</button>
+            <button class="btn btn-outline-primary btn-sm" type="button" data-chatbot-message="Món cay">Món cay</button>
+            <button class="btn btn-outline-primary btn-sm" type="button" data-chatbot-message="Đồ uống">Đồ uống</button>
+            <button class="btn btn-outline-primary btn-sm" type="button" data-chatbot-message="Món hải sản">Hải sản</button>
+            <button class="btn btn-outline-primary btn-sm" type="button" data-chatbot-message="Món bán chạy">Bán chạy</button>
+            <button class="btn btn-primary btn-sm" type="button" id="chatbotBookingToggle">Đặt bàn</button>
+        </div>
+
+        <form class="chatbot-booking" id="chatbotBookingForm">
+            <input class="form-control form-control-sm wide" name="customer_name" placeholder="Tên khách" autocomplete="name" required>
+            <input class="form-control form-control-sm wide" name="phone" placeholder="Số điện thoại" autocomplete="tel" required>
+            <input class="form-control form-control-sm" name="number_of_guests" type="number" min="1" max="30" placeholder="Số khách" required>
+            <input class="form-control form-control-sm" name="reservation_time" type="datetime-local" required>
+            <button class="btn btn-primary btn-sm wide" type="submit">Gửi đặt bàn</button>
+        </form>
+
+        <form class="chatbot-compose" id="chatbotForm">
+            <input class="form-control form-control-sm" id="chatbotInput" name="message" placeholder="Nhập tin nhắn..." autocomplete="off">
+            <button class="btn btn-primary btn-sm" type="submit">Gửi</button>
+        </form>
+    </div>
+</section>
+
+<button class="chatbot-launcher" type="button" id="chatbotLauncher" aria-label="Mở chatbot">Chat</button>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    (() => {
+        const panel = document.getElementById('chatbotPanel');
+        const launcher = document.getElementById('chatbotLauncher');
+        const close = document.getElementById('chatbotClose');
+        const messages = document.getElementById('chatbotMessages');
+        const form = document.getElementById('chatbotForm');
+        const input = document.getElementById('chatbotInput');
+        const bookingToggle = document.getElementById('chatbotBookingToggle');
+        const bookingForm = document.getElementById('chatbotBookingForm');
+        const endpoint = '{{ url('/api/chatbot/message') }}';
+        const sessionKey = 'restaurant_world_chatbot_session';
+        const newSessionId = () => window.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+        const sessionId = localStorage.getItem(sessionKey) || newSessionId();
+
+        localStorage.setItem(sessionKey, sessionId);
+
+        const addMessage = (text, sender = 'bot') => {
+            const bubble = document.createElement('div');
+            bubble.className = `chatbot-message ${sender}`;
+            bubble.textContent = text;
+            messages.appendChild(bubble);
+            messages.scrollTop = messages.scrollHeight;
+        };
+
+        const sendPayload = async (payload, visibleText = payload.message) => {
+            if (visibleText) {
+                addMessage(visibleText, 'user');
+            }
+
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ session_id: sessionId, ...payload }),
+                });
+
+                const data = await response.json();
+                addMessage(data.reply || 'Chatbot chưa nhận được phản hồi phù hợp.');
+            } catch (error) {
+                addMessage('Kết nối chatbot đang gián đoạn. Bạn vui lòng thử lại sau.');
+            }
+        };
+
+        const openPanel = () => {
+            panel.classList.add('is-open');
+
+            if (! messages.childElementCount) {
+                addMessage('Xin chào, mình có thể hỗ trợ giờ mở cửa, thực đơn và đặt bàn tự động.');
+            }
+        };
+
+        launcher.addEventListener('click', openPanel);
+        close.addEventListener('click', () => panel.classList.remove('is-open'));
+
+        document.querySelectorAll('[data-chatbot-message]').forEach((button) => {
+            button.addEventListener('click', () => sendPayload({ message: button.dataset.chatbotMessage }));
+        });
+
+        bookingToggle.addEventListener('click', () => {
+            bookingForm.classList.toggle('is-open');
+        });
+
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const message = input.value.trim();
+
+            if (! message) {
+                return;
+            }
+
+            input.value = '';
+            sendPayload({ message });
+        });
+
+        bookingForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const fields = Object.fromEntries(new FormData(bookingForm).entries());
+
+            sendPayload({
+                intent: 'dat_ban',
+                message: 'Đặt bàn qua chatbot',
+                parameters: fields,
+            }, `Đặt bàn ${fields.number_of_guests} khách lúc ${fields.reservation_time}`);
+
+            bookingForm.reset();
+            bookingForm.classList.remove('is-open');
+        });
+    })();
+</script>
 </body>
 </html>
