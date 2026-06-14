@@ -196,6 +196,57 @@
                 </div>
             </div>
         </div>
+
+        <div class="store-map-section">
+            <div class="store-contact-info">
+                <h2 class="store-contact-title">Thông Tin Liên Hệ</h2>
+
+                <div class="store-contact-list">
+                    <div class="store-contact-item">
+                        <i class="bi bi-telephone-fill" aria-hidden="true"></i>
+                        <div>Hotline: <a href="tel:0918118544">091 811 85 44</a></div>
+                    </div>
+                    <div class="store-contact-item">
+                        <i class="bi bi-envelope-fill" aria-hidden="true"></i>
+                        <div>Email: <a href="mailto:huynhhuukhiem1978vl@gmail.com">huynhhuukhiem1978vl@gmail.com</a></div>
+                    </div>
+                    <div class="store-contact-item">
+                        <i class="bi bi-globe2" aria-hidden="true"></i>
+                        <div>Website: <a href="https://amthucaosen.com/" target="_blank" rel="noopener">https://amthucaosen.com/</a></div>
+                    </div>
+                    <div class="store-contact-item">
+                        <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
+                        <div>Địa chỉ: 100k Đ. Võ Văn Kiệt, Phường Long Châu, Vĩnh Long.</div>
+                    </div>
+                </div>
+
+                <div class="store-socials" aria-label="Mạng xã hội">
+                    <span class="store-social-icon"><i class="bi bi-facebook" aria-hidden="true"></i></span>
+                    <span class="store-social-icon"><i class="bi bi-instagram" aria-hidden="true"></i></span>
+                    <span class="store-social-icon"><i class="bi bi-tiktok" aria-hidden="true"></i></span>
+                    <span class="store-social-icon"><i class="bi bi-youtube" aria-hidden="true"></i></span>
+                </div>
+            </div>
+
+            <div class="section-title align-items-center mb-3">
+                <div>
+                    <div class="eyebrow">Vị trí</div>
+                    <h2 class="h1 mb-0 text-white">Bản đồ cửa hàng</h2>
+                </div>
+            </div>
+
+            <div class="store-map-shell">
+                <div class="ratio ratio-21x9 store-map-frame">
+                    <iframe
+                        src="https://www.google.com/maps?q=%C3%82m%20Th%E1%BB%B1c%20Ao%20Sen%20100K%20%C4%90.%20V%C3%B5%20V%C4%83n%20Ki%E1%BB%87t%2C%20Long%20Ch%C3%A2u%2C%20V%C4%A9nh%20Long%2C%20Vi%E1%BB%87t%20Nam&output=embed"
+                        title="Bản đồ cửa hàng"
+                        allowfullscreen
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 @endsection

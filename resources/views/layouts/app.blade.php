@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'Nhà hàng World')</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         :root {
             --ivory: #fffaf0;
@@ -223,6 +224,111 @@
         .contact-band a,
         .contact-band .text-muted {
             color: rgba(255, 255, 255, .78) !important;
+        }
+
+        .store-map-section {
+            margin-top: 1.5rem;
+            background:
+                linear-gradient(rgba(14, 59, 50, .92), rgba(14, 59, 50, .92)),
+                url("{{ asset('images/restaurant-interior.png') }}") center / cover;
+            border-radius: 8px;
+            padding: clamp(1rem, 2.5vw, 1.6rem);
+            color: #fff;
+        }
+
+        .store-contact-info {
+            max-width: 720px;
+            padding: clamp(.5rem, 2vw, 1rem) 0 clamp(1.25rem, 3vw, 2rem);
+        }
+
+        .store-contact-title {
+            color: #ffc21a;
+            font-family: "Brush Script MT", "Segoe Script", cursive;
+            font-size: clamp(2.4rem, 8vw, 4rem);
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: clamp(1.2rem, 3vw, 2rem);
+            text-shadow: 0 3px 0 rgba(0, 0, 0, .12);
+        }
+
+        .store-contact-list {
+            display: grid;
+            gap: .85rem;
+            margin: 0;
+            font-size: clamp(1rem, 2.3vw, 1.12rem);
+            font-weight: 800;
+            line-height: 1.7;
+        }
+
+        .store-contact-item {
+            display: flex;
+            align-items: flex-start;
+            gap: .55rem;
+        }
+
+        .store-contact-item i {
+            flex: 0 0 auto;
+            color: #ffc21a;
+            font-size: 1.08em;
+            line-height: 1.65;
+        }
+
+        .store-contact-item a {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .store-contact-item a:hover {
+            color: var(--gold-soft);
+        }
+
+        .store-socials {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .45rem;
+            margin-top: clamp(1.5rem, 4vw, 2.4rem);
+        }
+
+        .store-social-icon {
+            display: inline-grid;
+            place-items: center;
+            width: clamp(2.1rem, 7vw, 2.5rem);
+            aspect-ratio: 1;
+            border-radius: 50%;
+            background: #ffc21a;
+            color: var(--green);
+            font-size: clamp(1.25rem, 4vw, 1.5rem);
+            line-height: 1;
+        }
+
+        .store-map-shell {
+            position: relative;
+            padding: clamp(.5rem, 1.4vw, .85rem);
+            border: 2px solid rgba(217, 164, 65, .86);
+        }
+
+        .store-map-shell::before {
+            content: "";
+            position: absolute;
+            inset: .35rem;
+            border: 1px solid rgba(217, 164, 65, .76);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .store-map-frame {
+            position: relative;
+            z-index: 1;
+            min-height: clamp(280px, 44vw, 520px);
+            background: #e9ecef;
+        }
+
+        .store-map-frame iframe {
+            width: 100%;
+            height: 100%;
+            min-height: inherit;
+            border: 0;
+            display: block;
         }
 
         .chatbot-launcher {
