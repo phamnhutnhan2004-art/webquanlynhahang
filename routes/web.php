@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\HomePartyController;
 use App\Http\Controllers\LiveOrderController;
 use Illuminate\Support\Facades\Route;
 
@@ -15,6 +17,11 @@ Route::get('/storage/{path}', function (string $path) {
 })->where('path', '.*')->name('storage.public');
 
 Route::get('/', [DashboardController::class, 'home'])->name('home');
+Route::get('/gioi-thieu', [DashboardController::class, 'about'])->name('about');
+Route::get('/lien-he', [ContactController::class, 'show'])->name('contact');
+Route::post('/lien-he', [ContactController::class, 'store'])->name('contact.store');
+Route::get('/dat-tiec-tai-nha', [HomePartyController::class, 'show'])->name('home-parties.show');
+Route::post('/dat-tiec-tai-nha', [HomePartyController::class, 'store'])->name('home-parties.store');
 
 Route::middleware('guest')->group(function () {
     Route::get('/dang-nhap', [AuthController::class, 'showLogin'])->name('login');
@@ -40,8 +47,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('/menu-galleries/{menuGallery}', [DashboardController::class, 'destroyMenuGallery'])->name('menu-galleries.destroy');
     Route::post('/gallery-images', [DashboardController::class, 'storeGalleryImage'])->name('gallery-images.store');
     Route::delete('/gallery-images/{galleryImage}', [DashboardController::class, 'destroyGalleryImage'])->name('gallery-images.destroy');
+    Route::patch('/home-parties/{homeParty}', [HomePartyController::class, 'update'])->name('home-parties.update');
     Route::get('/{section}', [DashboardController::class, 'adminSection'])
-        ->whereIn('section', ['employees', 'products', 'categories', 'tables', 'orders', 'menu-galleries', 'gallery-images', 'stats'])
+        ->whereIn('section', ['employees', 'products', 'categories', 'tables', 'orders', 'home-parties', 'menu-galleries', 'gallery-images', 'stats'])
         ->name('section');
 });
 

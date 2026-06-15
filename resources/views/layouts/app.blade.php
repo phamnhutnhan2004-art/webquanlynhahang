@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'Nhà hàng World')</title>
+    <title>@yield('title', 'Nhà hàng Hoa Sen')</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <style>
@@ -61,6 +61,24 @@
         .nav-link:hover {
             color: var(--gold-soft) !important;
             opacity: 1;
+        }
+
+        .navbar .dropdown-menu {
+            border: 1px solid rgba(217, 164, 65, .28);
+            border-radius: 8px;
+            background: rgba(255, 250, 240, .98);
+            box-shadow: 0 18px 45px rgba(44, 27, 18, .16);
+        }
+
+        .navbar .dropdown-item {
+            color: var(--wood-dark);
+            font-weight: 800;
+        }
+
+        .navbar .dropdown-item:hover,
+        .navbar .dropdown-item:focus {
+            background: var(--green-soft);
+            color: var(--green);
         }
 
         .btn {
@@ -484,17 +502,26 @@
 <body>
 <nav class="navbar navbar-expand-lg sticky-top">
     <div class="container">
-        <a class="navbar-brand" href="{{ route('home') }}">Nhà hàng World</a>
+        <a class="navbar-brand" href="{{ route('home') }}">Nhà hàng Hoa Sen</a>
         <button class="navbar-toggler bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-label="Mở menu">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="mainNav">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item"><a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">Trang chủ</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('home') }}#mon-an">Thực đơn</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('home') }}#menu-hinh-anh">Menu nhà hàng</a></li>
+                <li class="nav-item"><a class="nav-link {{ request()->routeIs('about') ? 'active' : '' }}" href="{{ route('about') }}">Giới thiệu</a></li>
+                <li class="nav-item dropdown">
+                    <button class="nav-link dropdown-toggle border-0 bg-transparent" id="menuDropdown" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Thực đơn
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="menuDropdown">
+                        <li><a class="dropdown-item" href="{{ route('home') }}#mon-an">Món ăn nổi bật</a></li>
+                        <li><a class="dropdown-item" href="{{ route('home') }}#menu-hinh-anh">Menu quán</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item"><a class="nav-link {{ request()->routeIs('home-parties.show') ? 'active' : '' }}" href="{{ route('home-parties.show') }}">Đặt tiệc tại nhà</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('home') }}#hinh-anh">Hình ảnh</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('home') }}#lien-he">Liên hệ</a></li>
+                <li class="nav-item"><a class="nav-link {{ request()->routeIs('contact') ? 'active' : '' }}" href="{{ route('contact') }}">Liên hệ</a></li>
                 @auth
                     @if(auth()->user()->isAdmin())
                         <li class="nav-item"><a class="nav-link {{ request()->routeIs('admin.*') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">Quản trị</a></li>
@@ -594,7 +621,7 @@
         const bookingToggle = document.getElementById('chatbotBookingToggle');
         const bookingForm = document.getElementById('chatbotBookingForm');
         const endpoint = '{{ url('/api/chatbot/message') }}';
-        const sessionKey = 'restaurant_world_chatbot_session';
+        const sessionKey = 'restaurant_hoa_sen_chatbot_session';
         const newSessionId = () => window.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`;
         const sessionId = localStorage.getItem(sessionKey) || newSessionId();
 

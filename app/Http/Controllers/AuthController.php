@@ -17,20 +17,27 @@ class AuthController extends Controller
 {
     public function showLogin(): View
     {
-        return view('auth.login');
+        return view('auth.login', ['activeAuthTab' => 'login']);
     }
 
     public function login(Request $request): RedirectResponse
     {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
+        $data = $request->validate([
+            'login' => ['required', 'string', 'max:150'],
             'password' => ['required', 'string'],
         ], $this->messages());
 
+        $login = trim($data['login']);
+        $loginField = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
+        $credentials = [
+            $loginField => $login,
+            'password' => $data['password'],
+        ];
+
         if (! Auth::attempt($credentials, $request->boolean('remember'))) {
             return back()
-                ->withInput($request->only('email'))
-                ->withErrors(['email' => 'Email hoặc mật khẩu không đúng.']);
+                ->withInput($request->only('login'))
+                ->withErrors(['login' => 'Email, số điện thoại hoặc mật khẩu không đúng.']);
         }
 
         $request->session()->regenerate();
@@ -40,7 +47,7 @@ class AuthController extends Controller
 
     public function showRegister(): View
     {
-        return view('auth.register');
+        return view('auth.login', ['activeAuthTab' => 'register']);
     }
 
     public function register(Request $request): RedirectResponse
@@ -174,8 +181,9 @@ class AuthController extends Controller
             'min' => ':attribute phải có ít nhất :min ký tự.',
             'max' => ':attribute không được vượt quá :max ký tự.',
             'attributes.email' => 'Email',
+            'attributes.login' => 'Email hoặc số điện thoại',
             'attributes.password' => 'Mật khẩu',
-            'attributes.name' => 'Họ tên',
+            'attributes.name' => 'Họ và tên',
             'attributes.phone' => 'Số điện thoại',
             'attributes.address' => 'Địa chỉ',
         ];

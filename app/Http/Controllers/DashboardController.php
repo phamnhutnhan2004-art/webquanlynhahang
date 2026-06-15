@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Customer;
 use App\Models\Employee;
 use App\Models\GalleryImage;
+use App\Models\HomeParty;
 use App\Models\MenuGallery;
 use App\Models\Order;
 use App\Models\Payment;
@@ -39,15 +40,25 @@ class DashboardController extends Controller
         ]);
     }
 
+    public function about(): View
+    {
+        return view('about');
+    }
+
     public function admin(): View
     {
         return view('admin.dashboard', [
             'totalProducts' => Product::count(),
             'totalOrders' => Order::count(),
             'totalRevenue' => Payment::sum('total_amount'),
+            'totalHomeParties' => HomeParty::count(),
+            'homePartyRevenue' => HomeParty::where('status', 'hoàn thành')->sum('total_price'),
+            'homePartyGuests' => HomeParty::whereIn('status', ['đã xác nhận', 'đang chuẩn bị', 'đang phục vụ', 'hoàn thành'])->sum('guest_quantity'),
+            'activeHomeParties' => HomeParty::whereIn('status', ['đang chuẩn bị', 'đang phục vụ'])->count(),
             'activeTables' => RestaurantTable::whereNotIn('status', ['trống'])->count(),
             'pendingReservations' => Reservation::where('status', 'chờ xác nhận')->count(),
             'recentOrders' => Order::with(['customer', 'table'])->latest()->limit(5)->get(),
+            'recentHomeParties' => HomeParty::with('assignedEmployee.user')->latest()->limit(5)->get(),
         ]);
     }
 
@@ -59,6 +70,7 @@ class DashboardController extends Controller
             'categories',
             'tables',
             'orders',
+            'home-parties',
             'menu-galleries',
             'gallery-images',
             'stats',
@@ -73,6 +85,11 @@ class DashboardController extends Controller
             'categories' => ['items' => Category::withCount('products')->latest()->get()],
             'tables' => ['items' => RestaurantTable::orderBy('area')->orderBy('table_code')->get()],
             'orders' => ['items' => Order::with(['customer', 'table', 'employee', 'items.product'])->latest()->get()],
+            'home-parties' => [
+                'items' => HomeParty::with(['details.food.category', 'assignedEmployee.user'])->latest()->get(),
+                'employees' => Employee::with('user')->where('status', 'đang làm')->orderBy('employee_code')->get(),
+                'statuses' => HomeParty::STATUSES,
+            ],
             'menu-galleries' => ['items' => MenuGallery::latest()->get()],
             'gallery-images' => ['items' => GalleryImage::latest()->get()],
             'stats' => [

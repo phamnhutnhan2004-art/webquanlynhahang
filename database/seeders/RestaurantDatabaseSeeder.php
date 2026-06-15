@@ -44,10 +44,10 @@ class RestaurantDatabaseSeeder extends Seeder
         ]);
 
         DB::table('users')->insert([
-            ['id' => 1, 'role_id' => 1, 'full_name' => 'Nguyễn Quốc Huy', 'email' => 'quantri@nhahangworld.vn', 'phone' => '0901000001', 'password' => Hash::make('12345678'), 'status' => 'đang hoạt động', 'created_at' => now(), 'updated_at' => now()],
-            ['id' => 2, 'role_id' => 2, 'full_name' => 'Phạm Thị Thu Ngân', 'email' => 'thungan@nhahangworld.vn', 'phone' => '0901000002', 'password' => Hash::make('12345678'), 'status' => 'đang hoạt động', 'created_at' => now(), 'updated_at' => now()],
-            ['id' => 3, 'role_id' => 3, 'full_name' => 'Trần Hoàng Phúc', 'email' => 'phuc.phucvu@nhahangworld.vn', 'phone' => '0901000003', 'password' => Hash::make('12345678'), 'status' => 'đang hoạt động', 'created_at' => now(), 'updated_at' => now()],
-            ['id' => 4, 'role_id' => 4, 'full_name' => 'Bùi Văn Bếp', 'email' => 'beptruong@nhahangworld.vn', 'phone' => '0901000004', 'password' => Hash::make('12345678'), 'status' => 'đang hoạt động', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 1, 'role_id' => 1, 'full_name' => 'Nguyễn Quốc Huy', 'email' => 'quantri@nhahanghoasen.vn', 'phone' => '0901000001', 'password' => Hash::make('12345678'), 'status' => 'đang hoạt động', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 2, 'role_id' => 2, 'full_name' => 'Phạm Thị Thu Ngân', 'email' => 'thungan@nhahanghoasen.vn', 'phone' => '0901000002', 'password' => Hash::make('12345678'), 'status' => 'đang hoạt động', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 3, 'role_id' => 3, 'full_name' => 'Trần Hoàng Phúc', 'email' => 'phuc.phucvu@nhahanghoasen.vn', 'phone' => '0901000003', 'password' => Hash::make('12345678'), 'status' => 'đang hoạt động', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 4, 'role_id' => 4, 'full_name' => 'Bùi Văn Bếp', 'email' => 'beptruong@nhahanghoasen.vn', 'phone' => '0901000004', 'password' => Hash::make('12345678'), 'status' => 'đang hoạt động', 'created_at' => now(), 'updated_at' => now()],
             ['id' => 5, 'role_id' => 5, 'full_name' => 'Nguyễn Văn An', 'email' => 'nguyenvanan@gmail.com', 'phone' => '0912345678', 'password' => Hash::make('12345678'), 'status' => 'đang hoạt động', 'created_at' => now(), 'updated_at' => now()],
             ['id' => 6, 'role_id' => 5, 'full_name' => 'Trần Thị Mai', 'email' => 'tranthimai@gmail.com', 'phone' => '0987654321', 'password' => Hash::make('12345678'), 'status' => 'đang hoạt động', 'created_at' => now(), 'updated_at' => now()],
             ['id' => 7, 'role_id' => 5, 'full_name' => 'Lê Hoàng Nam', 'email' => 'lehoangnam@gmail.com', 'phone' => '0977000111', 'password' => Hash::make('12345678'), 'status' => 'đang hoạt động', 'created_at' => now(), 'updated_at' => now()],

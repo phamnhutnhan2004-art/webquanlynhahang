@@ -7,6 +7,7 @@
         'categories' => 'Danh mục',
         'tables' => 'Bàn ăn',
         'orders' => 'Đơn hàng',
+        'home-parties' => 'Đặt tiệc tại nhà',
         'menu-galleries' => 'Menu hình ảnh',
         'gallery-images' => 'Thư viện ảnh',
         'stats' => 'Thống kê',
@@ -301,6 +302,84 @@
                             <tr><td>{{ $row->date }}</td><td>{{ number_format((float) $row->revenue) }} VNĐ</td></tr>
                         @empty
                             <tr><td colspan="2" class="text-muted">Chưa có dữ liệu thống kê.</td></tr>
+                        @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    @elseif($section === 'home-parties')
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Khách hàng</th>
+                                <th>Lịch tổ chức</th>
+                                <th>Loại tiệc</th>
+                                <th>Thực đơn</th>
+                                <th>Tổng tiền</th>
+                                <th>Trạng thái / Nhân viên</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @forelse($items as $item)
+                            <tr>
+                                <td>
+                                    <strong>{{ $item->full_name }}</strong>
+                                    <div class="small text-muted">{{ $item->phone }}</div>
+                                    <div class="small text-muted">{{ $item->email ?: 'Chưa có email' }}</div>
+                                    <div class="small">{{ $item->address }}</div>
+                                </td>
+                                <td>
+                                    <strong>{{ $item->event_date?->format('d/m/Y') }}</strong>
+                                    <div class="small text-muted">{{ $item->event_time?->format('H:i') }}</div>
+                                    <div class="small">{{ $item->guest_quantity }} khách</div>
+                                </td>
+                                <td>
+                                    <span class="status-badge">{{ $item->party_type }}</span>
+                                    @if($item->note)
+                                        <div class="small text-muted mt-2">{{ $item->note }}</div>
+                                    @endif
+                                </td>
+                                <td>
+                                    <div class="d-grid gap-1">
+                                        @forelse($item->details as $detail)
+                                            <div class="small">
+                                                <strong>{{ $detail->food?->name ?? 'Món đã xóa' }}</strong>
+                                                x {{ $detail->quantity }}
+                                                <span class="text-muted">({{ number_format((float) $detail->subtotal) }} VNĐ)</span>
+                                            </div>
+                                        @empty
+                                            <span class="text-muted">Chưa có món.</span>
+                                        @endforelse
+                                    </div>
+                                </td>
+                                <td><strong class="gold-text">{{ number_format((float) $item->total_price) }} VNĐ</strong></td>
+                                <td style="min-width: 260px;">
+                                    <form method="POST" action="{{ route('admin.home-parties.update', $item) }}" class="d-grid gap-2">
+                                        @csrf
+                                        @method('PATCH')
+                                        <select class="form-select" name="status" aria-label="Trạng thái đơn đặt tiệc">
+                                            @foreach($statuses as $status)
+                                                <option value="{{ $status }}" @selected($item->status === $status)>{{ ucfirst($status) }}</option>
+                                            @endforeach
+                                        </select>
+                                        <select class="form-select" name="assigned_employee_id" aria-label="Nhân viên phụ trách">
+                                            <option value="">Chưa phân công</option>
+                                            @foreach($employees as $employee)
+                                                <option value="{{ $employee->id }}" @selected($item->assigned_employee_id === $employee->id)>
+                                                    {{ $employee->employee_code }} - {{ $employee->user?->name ?? $employee->user?->full_name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        <button class="btn btn-primary btn-sm" type="submit">Cập nhật</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="6" class="text-muted">Chưa có đơn đặt tiệc tại nhà.</td></tr>
                         @endforelse
                         </tbody>
                     </table>

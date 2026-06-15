@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'name' => env('APP_NAME', 'Quản lý Nhà hàng World'),
+    'name' => env('APP_NAME', 'Quản lý Nhà hàng Hoa Sen'),
     'env' => env('APP_ENV', 'production'),
     'debug' => (bool) env('APP_DEBUG', false),
     'url' => env('APP_URL', 'http://localhost'),

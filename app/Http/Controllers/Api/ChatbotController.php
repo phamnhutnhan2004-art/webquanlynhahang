@@ -123,7 +123,7 @@ class ChatbotController extends Controller
     private function greeting(): array
     {
         return [
-            'reply' => 'Chào anh/chị, mình là trợ lý của Nhà hàng World. Mình có thể tư vấn món ăn, lọc món cay/hải sản/đồ uống, xem món bán chạy, hỗ trợ đặt bàn và trả lời thông tin nhà hàng.',
+            'reply' => 'Chào anh/chị, mình là trợ lý của Nhà hàng Hoa Sen. Mình có thể tư vấn món ăn, lọc món cay/hải sản/đồ uống, xem món bán chạy, hỗ trợ đặt bàn và trả lời thông tin nhà hàng.',
             'data' => [
                 'quick_replies' => ['Gợi ý món cay', 'Có món hải sản không?', 'Món bán chạy', 'Đặt bàn cho 4 người tối nay'],
             ],
@@ -145,7 +145,7 @@ class ChatbotController extends Controller
 
         if ($this->containsAny($text, ['dia chi', 'o dau', 'duong nao', 'vi tri'])) {
             return [
-                'reply' => "Nhà hàng World ở {$profile['address']}.",
+                'reply' => "Nhà hàng Hoa Sen ở {$profile['address']}.",
                 'data' => ['restaurant' => $profile],
             ];
         }
@@ -165,7 +165,7 @@ class ChatbotController extends Controller
         }
 
         return [
-            'reply' => "Nhà hàng World mở cửa {$profile['opening_hours']}. Địa chỉ: {$profile['address']}. Hotline: {$profile['phone']}.",
+            'reply' => "Nhà hàng Hoa Sen mở cửa {$profile['opening_hours']}. Địa chỉ: {$profile['address']}. Hotline: {$profile['phone']}.",
             'data' => ['restaurant' => $profile],
         ];
     }
@@ -906,7 +906,7 @@ class ChatbotController extends Controller
     private function restaurantProfile(): array
     {
         return [
-            'name' => 'Nhà hàng World',
+            'name' => 'Nhà hàng Hoa Sen',
             'address' => env('RESTAURANT_ADDRESS', '100k Đ. Võ Văn Kiệt, Phường Long Châu, Vĩnh Long'),
             'phone' => env('RESTAURANT_PHONE', '0918 118 544'),
             'opening_hours' => env('RESTAURANT_OPENING_HOURS', '09:00 - 22:00 hằng ngày'),

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Nhà hàng World')
+@section('title', 'Nhà hàng Hoa Sen')
 
 @section('content')
 <section class="hero-full">
@@ -8,7 +8,7 @@
         <div class="row align-items-end g-4">
             <div class="col-lg-7">
                 <div class="eyebrow mb-3">Ẩm thực Việt cao cấp</div>
-                <h1 class="display-3 fw-black fw-bold mb-3">Nhà hàng World</h1>
+                <h1 class="display-3 fw-black fw-bold mb-3">Nhà hàng Hoa Sen</h1>
                 <p class="lead mb-4">Không gian sang trọng, thực đơn chọn lọc và hệ thống đặt bàn trực tuyến dành cho những bữa ăn đáng nhớ.</p>
                 <div class="d-flex flex-wrap gap-2">
                     @guest
@@ -50,12 +50,12 @@
     <div class="container">
         <div class="row align-items-center g-4">
             <div class="col-lg-6">
-                <img class="gallery-img rounded-2 shadow" src="{{ asset('images/restaurant-interior.png') }}" alt="Không gian nhà hàng World">
+                <img class="gallery-img rounded-2 shadow" src="{{ asset('images/restaurant-interior.png') }}" alt="Không gian nhà hàng Hoa Sen">
             </div>
             <div class="col-lg-6">
                 <div class="eyebrow mb-2">Giới thiệu</div>
                 <h2 class="display-6 fw-bold mb-3">Không gian ấm cúng, phục vụ chỉn chu, món ăn đậm vị Việt.</h2>
-                <p class="text-muted fs-5">Nhà hàng World kết hợp phong cách gỗ ấm, ánh sáng vàng và mảng xanh tự nhiên để tạo nên trải nghiệm sang trọng nhưng gần gũi. Website hỗ trợ khách xem menu, đặt bàn và theo dõi lịch đặt tiện lợi.</p>
+                <p class="text-muted fs-5">Nhà hàng Hoa Sen kết hợp phong cách gỗ ấm, ánh sáng vàng và mảng xanh tự nhiên để tạo nên trải nghiệm sang trọng nhưng gần gũi. Website hỗ trợ khách xem menu, đặt bàn và theo dõi lịch đặt tiện lợi.</p>
                 <div class="d-flex flex-wrap gap-2 mt-3">
                     <span class="status-badge">Hải sản tươi</span>
                     <span class="status-badge">Tiệc gia đình</span>
