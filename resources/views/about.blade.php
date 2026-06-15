@@ -451,14 +451,14 @@
                             <i class="bi bi-telephone-fill" aria-hidden="true"></i>
                             <div>
                                 <strong class="d-block">Số điện thoại</strong>
-                                <a class="text-decoration-none" href="tel:0918118544">0918 118 544</a>
+                                <a class="text-decoration-none" href="tel:0789661781">0789661781</a>
                             </div>
                         </div>
                         <div class="about-contact-item">
                             <i class="bi bi-envelope-fill" aria-hidden="true"></i>
                             <div>
                                 <strong class="d-block">Email</strong>
-                                <a class="text-decoration-none" href="mailto:huynhhuukhiem1978vl@gmail.com">huynhhuukhiem1978vl@gmail.com</a>
+                                <a class="text-decoration-none" href="mailto:phamnhutnhan2004@gmail.com">phamnhutnhan2004@gmail.com</a>
                             </div>
                         </div>
 

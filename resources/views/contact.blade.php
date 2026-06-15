@@ -222,14 +222,14 @@
                                 <span class="contact-info-icon"><i class="bi bi-telephone-fill" aria-hidden="true"></i></span>
                                 <div>
                                     <strong class="d-block">Số điện thoại</strong>
-                                    <a href="tel:0918118544">0918 118 544</a>
+                                    <a href="tel:0789661781">0789661781</a>
                                 </div>
                             </div>
                             <div class="contact-info-item">
                                 <span class="contact-info-icon"><i class="bi bi-envelope-fill" aria-hidden="true"></i></span>
                                 <div>
                                     <strong class="d-block">Email</strong>
-                                    <a href="mailto:huynhhuukhiem1978vl@gmail.com">huynhhuukhiem1978vl@gmail.com</a>
+                                    <a href="mailto:phamnhutnhan2004@gmail.com">phamnhutnhan2004@gmail.com</a>
                                 </div>
                             </div>
                             <div class="contact-info-item">
@@ -341,8 +341,8 @@
                         <div class="col-md-6 col-lg-4">
                             <h3 class="h5 fw-bold text-warning mb-3">Thông tin liên hệ</h3>
                             <div class="d-grid gap-2 text-white-50">
-                                <span><i class="bi bi-telephone-fill text-warning me-2" aria-hidden="true"></i>0918 118 544</span>
-                                <span><i class="bi bi-envelope-fill text-warning me-2" aria-hidden="true"></i>huynhhuukhiem1978vl@gmail.com</span>
+                                <span><i class="bi bi-telephone-fill text-warning me-2" aria-hidden="true"></i>0789661781</span>
+                                <span><i class="bi bi-envelope-fill text-warning me-2" aria-hidden="true"></i>phamnhutnhan2004@gmail.com</span>
                                 <span><i class="bi bi-geo-alt-fill text-warning me-2" aria-hidden="true"></i>100k Đ. Võ Văn Kiệt, Phường Long Châu, Vĩnh Long</span>
                             </div>
                         </div>

@@ -908,7 +908,7 @@ class ChatbotController extends Controller
         return [
             'name' => 'Nhà hàng Hoa Sen',
             'address' => env('RESTAURANT_ADDRESS', '100k Đ. Võ Văn Kiệt, Phường Long Châu, Vĩnh Long'),
-            'phone' => env('RESTAURANT_PHONE', '0918 118 544'),
+            'phone' => env('RESTAURANT_PHONE', '0789661781'),
             'opening_hours' => env('RESTAURANT_OPENING_HOURS', '09:00 - 22:00 hằng ngày'),
             'reservation_hours' => env('RESTAURANT_RESERVATION_HOURS', '10:00 - 21:30 hằng ngày'),
             'parking' => env('RESTAURANT_PARKING', 'Nhà hàng có hỗ trợ khu vực gửi xe cho khách. Nếu đi ô tô, anh/chị nên gọi hotline trước để được hướng dẫn vị trí đậu xe thuận tiện.'),

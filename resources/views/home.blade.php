@@ -185,7 +185,7 @@
                     <div class="eyebrow mb-2">Liên hệ</div>
                     <h2 class="h1 fw-bold mb-3">Sẵn sàng cho bữa ăn tiếp theo?</h2>
                     <p class="fs-5 mb-2">Địa chỉ: 100k Đ. Võ Văn Kiệt, Phường Long Châu, Vĩnh Long</p>
-                    <p class="fs-5 mb-0">Hotline: 0918 118 544</p>
+                    <p class="fs-5 mb-0">Hotline: 0789661781</p>
                 </div>
                 <div class="col-lg-4 d-grid">
                     @guest
@@ -204,11 +204,11 @@
                 <div class="store-contact-list">
                     <div class="store-contact-item">
                         <i class="bi bi-telephone-fill" aria-hidden="true"></i>
-                        <div>Hotline: <a href="tel:0918118544">091 811 85 44</a></div>
+                        <div>Hotline: <a href="tel:0789661781">0789661781</a></div>
                     </div>
                     <div class="store-contact-item">
                         <i class="bi bi-envelope-fill" aria-hidden="true"></i>
-                        <div>Email: <a href="mailto:huynhhuukhiem1978vl@gmail.com">huynhhuukhiem1978vl@gmail.com</a></div>
+                        <div>Email: <a href="mailto:phamnhutnhan2004@gmail.com">phamnhutnhan2004@gmail.com</a></div>
                     </div>
                     <div class="store-contact-item">
                         <i class="bi bi-globe2" aria-hidden="true"></i>
