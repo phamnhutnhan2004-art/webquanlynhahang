@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\ChatbotLog;
 use App\Models\Customer;
 use App\Models\Employee;
 use App\Models\GalleryImage;
 use App\Models\HomeParty;
 use App\Models\MenuGallery;
 use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\Payment;
 use App\Models\Product;
 use App\Models\Reservation;
@@ -47,10 +49,57 @@ class DashboardController extends Controller
 
     public function admin(): View
     {
+        $monthlyRevenue = collect(range(5, 0))->map(function (int $monthsAgo) {
+            $month = now()->subMonths($monthsAgo);
+            $revenue = Payment::query()
+                ->whereYear('created_at', $month->year)
+                ->whereMonth('created_at', $month->month)
+                ->sum('total_amount');
+
+            return [
+                'label' => 'T'.$month->format('m'),
+                'value' => (float) $revenue,
+            ];
+        });
+
+        $dailyOrders = collect(range(6, 0))->map(function (int $daysAgo) {
+            $day = now()->subDays($daysAgo);
+
+            return [
+                'label' => $day->format('d/m'),
+                'value' => Order::whereDate('created_at', $day)->count(),
+            ];
+        });
+
+        $topProducts = OrderItem::query()
+            ->select('product_id', DB::raw('SUM(quantity) as total_quantity'))
+            ->with('product:id,name')
+            ->groupBy('product_id')
+            ->orderByDesc('total_quantity')
+            ->limit(5)
+            ->get()
+            ->map(fn (OrderItem $item) => [
+                'label' => $item->product?->name ?? 'Món đã xóa',
+                'value' => (int) $item->total_quantity,
+            ]);
+
+        $tableStatuses = RestaurantTable::query()
+            ->select('status', DB::raw('COUNT(*) as total'))
+            ->groupBy('status')
+            ->orderByDesc('total')
+            ->get()
+            ->map(fn (RestaurantTable $table) => [
+                'label' => $table->status,
+                'value' => (int) $table->total,
+            ]);
+
         return view('admin.dashboard', [
             'totalProducts' => Product::count(),
             'totalOrders' => Order::count(),
             'totalRevenue' => Payment::sum('total_amount'),
+            'totalCustomers' => Customer::count(),
+            'totalTables' => RestaurantTable::count(),
+            'totalReservations' => Reservation::count(),
             'totalHomeParties' => HomeParty::count(),
             'homePartyRevenue' => HomeParty::where('status', 'hoàn thành')->sum('total_price'),
             'homePartyGuests' => HomeParty::whereIn('status', ['đã xác nhận', 'đang chuẩn bị', 'đang phục vụ', 'hoàn thành'])->sum('guest_quantity'),
@@ -59,6 +108,10 @@ class DashboardController extends Controller
             'pendingReservations' => Reservation::where('status', 'chờ xác nhận')->count(),
             'recentOrders' => Order::with(['customer', 'table'])->latest()->limit(5)->get(),
             'recentHomeParties' => HomeParty::with('assignedEmployee.user')->latest()->limit(5)->get(),
+            'monthlyRevenue' => $monthlyRevenue,
+            'dailyOrders' => $dailyOrders,
+            'topProducts' => $topProducts,
+            'tableStatuses' => $tableStatuses,
         ]);
     }
 
@@ -70,9 +123,15 @@ class DashboardController extends Controller
             'categories',
             'tables',
             'orders',
+            'reservations',
             'home-parties',
+            'customers',
+            'payments',
+            'chatbot',
             'menu-galleries',
             'gallery-images',
+            'news',
+            'settings',
             'stats',
         ], true), 404);
 
@@ -85,6 +144,10 @@ class DashboardController extends Controller
             'categories' => ['items' => Category::withCount('products')->latest()->get()],
             'tables' => ['items' => RestaurantTable::orderBy('area')->orderBy('table_code')->get()],
             'orders' => ['items' => Order::with(['customer', 'table', 'employee', 'items.product'])->latest()->get()],
+            'reservations' => ['items' => Reservation::with(['customer', 'table', 'employee'])->latest()->get()],
+            'customers' => ['items' => Customer::withCount('reservations')->latest()->get()],
+            'payments' => ['items' => Payment::with(['reservation.customer', 'employee.user'])->latest()->get()],
+            'chatbot' => ['items' => ChatbotLog::with(['customer', 'reservation', 'order'])->latest()->get()],
             'home-parties' => [
                 'items' => HomeParty::with(['details.food.category', 'assignedEmployee.user'])->latest()->get(),
                 'employees' => Employee::with('user')->where('status', 'đang làm')->orderBy('employee_code')->get(),
@@ -92,6 +155,8 @@ class DashboardController extends Controller
             ],
             'menu-galleries' => ['items' => MenuGallery::latest()->get()],
             'gallery-images' => ['items' => GalleryImage::latest()->get()],
+            'news' => ['items' => collect()],
+            'settings' => ['items' => collect()],
             'stats' => [
                 'revenueByDay' => Payment::query()
                     ->select(DB::raw('DATE(created_at) as date'), DB::raw('SUM(total_amount) as revenue'))
@@ -115,6 +180,30 @@ class DashboardController extends Controller
         Category::create($data);
 
         return back()->with('status', 'Đã thêm danh mục mới.');
+    }
+
+    public function updateCategory(Request $request, Category $category): RedirectResponse
+    {
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:100', Rule::unique('categories', 'name')->ignore($category)],
+            'description' => ['nullable', 'string', 'max:255'],
+            'status' => ['required', Rule::in(['hiển thị', 'ẩn'])],
+        ]);
+
+        $category->update($data);
+
+        return back()->with('status', 'Đã cập nhật danh mục.');
+    }
+
+    public function destroyCategory(Category $category): RedirectResponse
+    {
+        if ($category->products()->exists()) {
+            return back()->with('status', 'Danh mục đang có món ăn nên chưa thể xóa.');
+        }
+
+        $category->delete();
+
+        return back()->with('status', 'Đã xóa danh mục.');
     }
 
     public function storeProduct(Request $request): RedirectResponse
@@ -220,6 +309,32 @@ class DashboardController extends Controller
         RestaurantTable::create($data);
 
         return back()->with('status', 'Đã thêm bàn ăn mới.');
+    }
+
+    public function updateTable(Request $request, RestaurantTable $table): RedirectResponse
+    {
+        $data = $request->validate([
+            'table_code' => ['required', 'string', 'max:30', Rule::unique('tables', 'table_code')->ignore($table)],
+            'table_name' => ['required', 'string', 'max:80'],
+            'area' => ['required', 'string', 'max:80'],
+            'seats' => ['required', 'integer', 'min:1', 'max:30'],
+            'status' => ['required', Rule::in(['trống', 'đang phục vụ', 'đã đặt', 'bảo trì'])],
+        ]);
+
+        $table->update($data);
+
+        return back()->with('status', 'Đã cập nhật bàn ăn.');
+    }
+
+    public function destroyTable(RestaurantTable $table): RedirectResponse
+    {
+        if ($table->reservations()->exists() || $table->orders()->exists()) {
+            return back()->with('status', 'Bàn ăn đang có dữ liệu liên quan nên chưa thể xóa.');
+        }
+
+        $table->delete();
+
+        return back()->with('status', 'Đã xóa bàn ăn.');
     }
 
     public function staff(): View

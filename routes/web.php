@@ -39,17 +39,21 @@ Route::post('/dang-xuat', [AuthController::class, 'logout'])->middleware('auth')
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'admin'])->name('dashboard');
     Route::post('/categories', [DashboardController::class, 'storeCategory'])->name('categories.store');
+    Route::put('/categories/{category}', [DashboardController::class, 'updateCategory'])->name('categories.update');
+    Route::delete('/categories/{category}', [DashboardController::class, 'destroyCategory'])->name('categories.destroy');
     Route::post('/products', [DashboardController::class, 'storeProduct'])->name('products.store');
     Route::put('/products/{product}', [DashboardController::class, 'updateProduct'])->name('products.update');
     Route::delete('/products/{product}', [DashboardController::class, 'destroyProduct'])->name('products.destroy');
     Route::post('/tables', [DashboardController::class, 'storeTable'])->name('tables.store');
+    Route::put('/tables/{table}', [DashboardController::class, 'updateTable'])->name('tables.update');
+    Route::delete('/tables/{table}', [DashboardController::class, 'destroyTable'])->name('tables.destroy');
     Route::post('/menu-galleries', [DashboardController::class, 'storeMenuGallery'])->name('menu-galleries.store');
     Route::delete('/menu-galleries/{menuGallery}', [DashboardController::class, 'destroyMenuGallery'])->name('menu-galleries.destroy');
     Route::post('/gallery-images', [DashboardController::class, 'storeGalleryImage'])->name('gallery-images.store');
     Route::delete('/gallery-images/{galleryImage}', [DashboardController::class, 'destroyGalleryImage'])->name('gallery-images.destroy');
     Route::patch('/home-parties/{homeParty}', [HomePartyController::class, 'update'])->name('home-parties.update');
     Route::get('/{section}', [DashboardController::class, 'adminSection'])
-        ->whereIn('section', ['employees', 'products', 'categories', 'tables', 'orders', 'home-parties', 'menu-galleries', 'gallery-images', 'stats'])
+        ->whereIn('section', ['employees', 'products', 'categories', 'tables', 'orders', 'reservations', 'home-parties', 'customers', 'payments', 'chatbot', 'menu-galleries', 'gallery-images', 'news', 'settings', 'stats'])
         ->name('section');
 });
 
