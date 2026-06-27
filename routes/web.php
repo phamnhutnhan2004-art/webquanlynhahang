@@ -1,9 +1,13 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AdminAiChatbotController;
+use App\Http\Controllers\AdminPaymentMethodController;
+use App\Http\Controllers\BillController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomePartyController;
+use App\Http\Controllers\KitchenOrderController;
 use App\Http\Controllers\LiveOrderController;
 use Illuminate\Support\Facades\Route;
 
@@ -51,9 +55,14 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('/menu-galleries/{menuGallery}', [DashboardController::class, 'destroyMenuGallery'])->name('menu-galleries.destroy');
     Route::post('/gallery-images', [DashboardController::class, 'storeGalleryImage'])->name('gallery-images.store');
     Route::delete('/gallery-images/{galleryImage}', [DashboardController::class, 'destroyGalleryImage'])->name('gallery-images.destroy');
+    Route::post('/payment-methods', [AdminPaymentMethodController::class, 'store'])->name('payment-methods.store');
+    Route::put('/payment-methods/{paymentMethod}', [AdminPaymentMethodController::class, 'update'])->name('payment-methods.update');
+    Route::delete('/payment-methods/{paymentMethod}', [AdminPaymentMethodController::class, 'destroy'])->name('payment-methods.destroy');
+    Route::put('/ai-chatbot', [AdminAiChatbotController::class, 'update'])->name('ai-chatbot.update');
+    Route::post('/ai-chatbot/test', [AdminAiChatbotController::class, 'test'])->name('ai-chatbot.test');
     Route::patch('/home-parties/{homeParty}', [HomePartyController::class, 'update'])->name('home-parties.update');
     Route::get('/{section}', [DashboardController::class, 'adminSection'])
-        ->whereIn('section', ['employees', 'products', 'categories', 'tables', 'orders', 'reservations', 'home-parties', 'customers', 'payments', 'chatbot', 'menu-galleries', 'gallery-images', 'news', 'settings', 'stats'])
+        ->whereIn('section', ['employees', 'products', 'categories', 'tables', 'orders', 'reservations', 'home-parties', 'customers', 'payments', 'payment-methods', 'chatbot', 'ai-chatbot', 'menu-galleries', 'gallery-images', 'news', 'settings', 'stats'])
         ->name('section');
 });
 
@@ -62,11 +71,22 @@ Route::middleware(['auth', 'staff'])->prefix('nhan-vien')->name('staff.')->group
     Route::get('/bep', [LiveOrderController::class, 'kitchen'])->name('kitchen');
     Route::get('/thu-ngan', [LiveOrderController::class, 'cashier'])->name('cashier');
     Route::get('/live/orders', [LiveOrderController::class, 'stream'])->name('live-orders.stream');
+    Route::get('/live/thong-bao-bep', [KitchenOrderController::class, 'notifications'])->name('kitchen-orders.notifications');
+    Route::post('/don-hang/{order}/gui-bep', [KitchenOrderController::class, 'send'])->name('kitchen-orders.send');
+    Route::get('/don-hang/{order}/thanh-toan', [BillController::class, 'checkout'])->name('orders.checkout');
+    Route::post('/don-hang/{order}/thanh-toan', [BillController::class, 'store'])->name('orders.pay');
+    Route::get('/hoa-don/{bill}', [BillController::class, 'show'])->name('bills.show');
+    Route::get('/hoa-don/{bill}/tai-xuong', [BillController::class, 'download'])->name('bills.download');
+    Route::patch('/bep/mon/{item}', [KitchenOrderController::class, 'updateItemStatus'])->name('kitchen-items.update-status');
+    Route::patch('/bep/{kitchenOrder}/phuc-vu', [KitchenOrderController::class, 'serve'])->name('kitchen-orders.serve');
     Route::patch('/dat-ban/{reservation}', [DashboardController::class, 'updateReservationStatus'])->name('reservations.update-status');
     Route::patch('/don-hang/{order}', [DashboardController::class, 'updateOrderStatus'])->name('orders.update-status');
 });
 
 Route::middleware(['auth', 'customer'])->prefix('khach-hang')->name('customer.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'customer'])->name('dashboard');
+    Route::get('/don-hang/{order}/thanh-toan', [BillController::class, 'checkout'])->name('orders.checkout');
+    Route::get('/hoa-don/{bill}', [BillController::class, 'show'])->name('bills.show');
+    Route::get('/hoa-don/{bill}/tai-xuong', [BillController::class, 'download'])->name('bills.download');
     Route::post('/dat-ban', [DashboardController::class, 'reserve'])->name('reservations.store');
 });

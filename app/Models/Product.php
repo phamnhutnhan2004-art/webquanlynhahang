@@ -23,6 +23,11 @@ class Product extends Model
         return $this->hasMany(OrderItem::class);
     }
 
+    public function kitchenItems(): HasMany
+    {
+        return $this->hasMany(KitchenOrderItem::class, 'food_id');
+    }
+
     public function getImageUrlAttribute(): string
     {
         if ($this->image) {

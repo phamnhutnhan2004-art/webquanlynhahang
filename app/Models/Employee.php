@@ -21,4 +21,19 @@ class Employee extends Model
     {
         return $this->hasMany(Order::class);
     }
+
+    public function staffKitchenOrders(): HasMany
+    {
+        return $this->hasMany(KitchenOrder::class, 'staff_id');
+    }
+
+    public function chefKitchenOrders(): HasMany
+    {
+        return $this->hasMany(KitchenOrder::class, 'chef_id');
+    }
+
+    public function bills(): HasMany
+    {
+        return $this->hasMany(Bill::class, 'cashier_id');
+    }
 }

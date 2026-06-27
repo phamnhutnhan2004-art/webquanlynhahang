@@ -16,9 +16,20 @@ class ChatbotLog extends Model
         'message',
         'intent',
         'confidence',
+        'model',
+        'prompt_tokens',
+        'completion_tokens',
+        'total_tokens',
+        'metadata',
     ];
 
-    protected $casts = ['confidence' => 'decimal:2'];
+    protected $casts = [
+        'confidence' => 'decimal:2',
+        'prompt_tokens' => 'integer',
+        'completion_tokens' => 'integer',
+        'total_tokens' => 'integer',
+        'metadata' => 'array',
+    ];
 
     public function customer(): BelongsTo
     {

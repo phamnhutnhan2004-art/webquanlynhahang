@@ -14,6 +14,8 @@ class RestaurantDatabaseSeeder extends Seeder
 
         foreach ([
             'chatbot_logs',
+            'kitchen_order_items',
+            'kitchen_orders',
             'order_items',
             'orders',
             'chatbot_histories',
@@ -79,7 +81,7 @@ class RestaurantDatabaseSeeder extends Seeder
 
         DB::table('tables')->insert([
             ['id' => 1, 'table_code' => 'B001', 'table_name' => 'Bàn 01', 'area' => 'Tầng 1', 'seats' => 4, 'status' => 'trống', 'created_at' => now(), 'updated_at' => now()],
-            ['id' => 2, 'table_code' => 'B002', 'table_name' => 'Bàn 02', 'area' => 'Tầng 1', 'seats' => 2, 'status' => 'đang phục vụ', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 2, 'table_code' => 'B002', 'table_name' => 'Bàn 02', 'area' => 'Tầng 1', 'seats' => 2, 'status' => 'đang sử dụng', 'created_at' => now(), 'updated_at' => now()],
             ['id' => 3, 'table_code' => 'B003', 'table_name' => 'Bàn 03', 'area' => 'Tầng 1', 'seats' => 6, 'status' => 'đã đặt', 'created_at' => now(), 'updated_at' => now()],
             ['id' => 4, 'table_code' => 'VIP01', 'table_name' => 'Bàn VIP 01', 'area' => 'Tầng 2', 'seats' => 8, 'status' => 'đã đặt', 'created_at' => now(), 'updated_at' => now()],
             ['id' => 5, 'table_code' => 'SV01', 'table_name' => 'Bàn sân vườn 01', 'area' => 'Sân vườn', 'seats' => 4, 'status' => 'trống', 'created_at' => now(), 'updated_at' => now()],

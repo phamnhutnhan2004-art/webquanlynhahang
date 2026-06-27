@@ -419,8 +419,16 @@
         }
     </style>
     @stack('styles')
+    <link href="{{ asset('css/hoa-sen-ui.css') }}?v={{ is_file(public_path('css/hoa-sen-ui.css')) ? filemtime(public_path('css/hoa-sen-ui.css')) : '1' }}" rel="stylesheet">
 </head>
 <body>
+<div class="page-loader" data-page-loader aria-label="Đang tải trang" role="status">
+    <div class="loader-card">
+        <div class="loader-logo"><i class="bi bi-shop" aria-hidden="true"></i></div>
+        <div class="loader-title">Quản trị Hoa Sen</div>
+        <div class="loader-ring" aria-hidden="true"></div>
+    </div>
+</div>
 @php
     $adminSections = [
         ['label' => 'Bảng điều khiển', 'icon' => 'bi-speedometer2', 'route' => route('admin.dashboard'), 'active' => request()->routeIs('admin.dashboard')],
@@ -433,7 +441,9 @@
         ['label' => 'Quản lý khách hàng', 'icon' => 'bi-people', 'route' => route('admin.section', 'customers'), 'active' => request()->is('admin/customers')],
         ['label' => 'Quản lý nhân viên', 'icon' => 'bi-person-badge', 'route' => route('admin.section', 'employees'), 'active' => request()->is('admin/employees')],
         ['label' => 'Quản lý thanh toán', 'icon' => 'bi-credit-card-2-front', 'route' => route('admin.section', 'payments'), 'active' => request()->is('admin/payments')],
+        ['label' => 'Quản lý phương thức thanh toán', 'icon' => 'bi-qr-code', 'route' => route('admin.section', 'payment-methods'), 'active' => request()->is('admin/payment-methods')],
         ['label' => 'Quản lý Chatbot', 'icon' => 'bi-robot', 'route' => route('admin.section', 'chatbot'), 'active' => request()->is('admin/chatbot')],
+        ['label' => 'Cấu hình AI Chatbot', 'icon' => 'bi-cpu', 'route' => route('admin.section', 'ai-chatbot'), 'active' => request()->is('admin/ai-chatbot')],
         ['label' => 'Quản lý thư viện ảnh', 'icon' => 'bi-images', 'route' => route('admin.section', 'gallery-images'), 'active' => request()->is('admin/gallery-images')],
         ['label' => 'Quản lý tin tức', 'icon' => 'bi-newspaper', 'route' => route('admin.section', 'news'), 'active' => request()->is('admin/news')],
         ['label' => 'Thống kê và báo cáo', 'icon' => 'bi-graph-up-arrow', 'route' => route('admin.section', 'stats'), 'active' => request()->is('admin/stats')],
@@ -510,6 +520,10 @@
                 <div class="alert alert-success border-0 shadow-sm">{{ session('status') }}</div>
             @endif
 
+            @if(session('error'))
+                <div class="alert alert-danger border-0 shadow-sm">{{ session('error') }}</div>
+            @endif
+
             @if(isset($errors) && $errors->any())
                 <div class="alert alert-danger border-0 shadow-sm">
                     <ul class="mb-0">
@@ -542,6 +556,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ asset('js/hoa-sen-ui.js') }}?v={{ is_file(public_path('js/hoa-sen-ui.js')) ? filemtime(public_path('js/hoa-sen-ui.js')) : '1' }}"></script>
 <script>
     (() => {
         const sidebar = document.getElementById('adminSidebar');

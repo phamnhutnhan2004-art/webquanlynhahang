@@ -4,14 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\ChatbotLog;
+use App\Models\AiChatbotSetting;
 use App\Models\Customer;
 use App\Models\Employee;
 use App\Models\GalleryImage;
 use App\Models\HomeParty;
+use App\Models\KitchenOrder;
 use App\Models\MenuGallery;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Payment;
+use App\Models\PaymentMethod;
 use App\Models\Product;
 use App\Models\Reservation;
 use App\Models\RestaurantTable;
@@ -127,7 +130,9 @@ class DashboardController extends Controller
             'home-parties',
             'customers',
             'payments',
+            'payment-methods',
             'chatbot',
+            'ai-chatbot',
             'menu-galleries',
             'gallery-images',
             'news',
@@ -142,12 +147,14 @@ class DashboardController extends Controller
                 'categories' => Category::where('status', 'hiển thị')->orderBy('name')->get(),
             ],
             'categories' => ['items' => Category::withCount('products')->latest()->get()],
-            'tables' => ['items' => RestaurantTable::orderBy('area')->orderBy('table_code')->get()],
-            'orders' => ['items' => Order::with(['customer', 'table', 'employee', 'items.product'])->latest()->get()],
+            'tables' => ['items' => RestaurantTable::with(['activeOrders.items.product'])->orderBy('area')->orderBy('table_code')->get()],
+            'orders' => ['items' => Order::with(['customer', 'table', 'employee', 'items.product', 'kitchenOrder.items.food'])->latest()->get()],
             'reservations' => ['items' => Reservation::with(['customer', 'table', 'employee'])->latest()->get()],
             'customers' => ['items' => Customer::withCount('reservations')->latest()->get()],
             'payments' => ['items' => Payment::with(['reservation.customer', 'employee.user'])->latest()->get()],
+            'payment-methods' => ['items' => PaymentMethod::withCount('bills')->orderBy('sort_order')->orderBy('id')->get()],
             'chatbot' => ['items' => ChatbotLog::with(['customer', 'reservation', 'order'])->latest()->get()],
+            'ai-chatbot' => ['items' => collect(), 'aiSetting' => AiChatbotSetting::current()],
             'home-parties' => [
                 'items' => HomeParty::with(['details.food.category', 'assignedEmployee.user'])->latest()->get(),
                 'employees' => Employee::with('user')->where('status', 'đang làm')->orderBy('employee_code')->get(),
@@ -198,7 +205,7 @@ class DashboardController extends Controller
     public function destroyCategory(Category $category): RedirectResponse
     {
         if ($category->products()->exists()) {
-            return back()->with('status', 'Danh mục đang có món ăn nên chưa thể xóa.');
+            return back()->with('error', 'Danh mục đang có món ăn nên chưa thể xóa.');
         }
 
         $category->delete();
@@ -239,10 +246,10 @@ class DashboardController extends Controller
 
     public function destroyProduct(Product $product): RedirectResponse
     {
-        if ($product->orderItems()->exists()) {
+        if ($product->orderItems()->exists() || $product->kitchenItems()->exists()) {
             $product->update(['status' => 'inactive']);
 
-            return back()->with('status', 'Món đã có trong đơn hàng nên được chuyển sang trạng thái ẩn.');
+            return back()->with('error', 'Món đã có trong đơn hàng nên được chuyển sang trạng thái ẩn thay vì xóa.');
         }
 
         $this->deleteStoredFile($product->image);
@@ -303,7 +310,7 @@ class DashboardController extends Controller
             'table_name' => ['required', 'string', 'max:80'],
             'area' => ['required', 'string', 'max:80'],
             'seats' => ['required', 'integer', 'min:1', 'max:30'],
-            'status' => ['required', Rule::in(['trống', 'đang phục vụ', 'đã đặt', 'bảo trì'])],
+            'status' => ['required', Rule::in(['trống', 'đã đặt', 'đang sử dụng', 'đang dọn dẹp'])],
         ]);
 
         RestaurantTable::create($data);
@@ -318,7 +325,7 @@ class DashboardController extends Controller
             'table_name' => ['required', 'string', 'max:80'],
             'area' => ['required', 'string', 'max:80'],
             'seats' => ['required', 'integer', 'min:1', 'max:30'],
-            'status' => ['required', Rule::in(['trống', 'đang phục vụ', 'đã đặt', 'bảo trì'])],
+            'status' => ['required', Rule::in(['trống', 'đã đặt', 'đang sử dụng', 'đang dọn dẹp'])],
         ]);
 
         $table->update($data);
@@ -329,7 +336,7 @@ class DashboardController extends Controller
     public function destroyTable(RestaurantTable $table): RedirectResponse
     {
         if ($table->reservations()->exists() || $table->orders()->exists()) {
-            return back()->with('status', 'Bàn ăn đang có dữ liệu liên quan nên chưa thể xóa.');
+            return back()->with('error', 'Bàn ăn đang có dữ liệu liên quan nên chưa thể xóa.');
         }
 
         $table->delete();
@@ -340,10 +347,23 @@ class DashboardController extends Controller
     public function staff(): View
     {
         return view('staff.dashboard', [
-            'orders' => Order::with(['customer', 'table'])->latest()->limit(10)->get(),
+            'orders' => Order::with(['customer', 'table', 'items.product', 'kitchenOrder.items.food'])
+                ->latest()
+                ->limit(10)
+                ->get(),
             'reservations' => Reservation::with(['customer', 'table'])->latest()->limit(10)->get(),
             'customers' => Customer::latest()->limit(10)->get(),
             'products' => Product::with('category')->limit(10)->get(),
+            'tables' => RestaurantTable::with(['activeOrders.items.product'])
+                ->orderBy('area')
+                ->orderBy('table_code')
+                ->limit(10)
+                ->get(),
+            'completedKitchenOrders' => KitchenOrder::with(['order.table', 'items.food'])
+                ->where('status', 'completed')
+                ->latest('updated_at')
+                ->limit(6)
+                ->get(),
         ]);
     }
 
@@ -388,7 +408,7 @@ class DashboardController extends Controller
 
             if ($order->table) {
                 $tableStatus = match ($data['status']) {
-                    'serving' => 'đang phục vụ',
+                    'serving' => 'đang sử dụng',
                     'completed', 'cancelled' => 'trống',
                     default => $order->table->status,
                 };
@@ -410,6 +430,10 @@ class DashboardController extends Controller
             'reservations' => Reservation::with('table')
                 ->where('customer_id', auth()->user()?->customer?->id)
                 ->latest()
+                ->get(),
+            'orders' => Order::with(['table', 'items.product', 'bill'])
+                ->where('customer_id', auth()->user()?->customer?->id)
+                ->latest('ordered_at')
                 ->get(),
         ]);
     }

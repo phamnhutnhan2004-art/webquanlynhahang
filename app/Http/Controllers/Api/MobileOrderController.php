@@ -49,11 +49,11 @@ class MobileOrderController extends Controller
         $updated = DB::transaction(function () use ($table): RestaurantTable {
             $lockedTable = RestaurantTable::whereKey($table->id)->lockForUpdate()->firstOrFail();
 
-            abort_if($lockedTable->status === 'bảo trì', 409, 'Bàn đang bảo trì, không thể mở bàn.');
+            abort_if($lockedTable->status === 'đang dọn dẹp', 409, 'Bàn đang dọn dẹp, không thể mở bàn.');
             abort_if($lockedTable->status === 'đã đặt', 409, 'Bàn đã được đặt trước, vui lòng kiểm tra lịch đặt bàn.');
 
             if ($lockedTable->status === 'trống') {
-                $lockedTable->update(['status' => 'đang phục vụ']);
+                $lockedTable->update(['status' => 'đang sử dụng']);
             }
 
             return $lockedTable->fresh();
@@ -113,7 +113,7 @@ class MobileOrderController extends Controller
         $order = DB::transaction(function () use ($data): Order {
             $table = RestaurantTable::whereKey($data['table_id'])->lockForUpdate()->firstOrFail();
 
-            abort_if($table->status === 'bảo trì', 409, 'Bàn đang bảo trì, không thể gửi order.');
+            abort_if($table->status === 'đang dọn dẹp', 409, 'Bàn đang dọn dẹp, không thể gửi order.');
 
             $productIds = collect($data['items'])->pluck('product_id')->unique()->values();
             $products = Product::whereIn('id', $productIds)->where('status', 'available')->get()->keyBy('id');
@@ -150,7 +150,7 @@ class MobileOrderController extends Controller
                 ]);
             }
 
-            $table->update(['status' => 'đang phục vụ']);
+            $table->update(['status' => 'đang sử dụng']);
 
             return $order->load(['table', 'employee.user', 'items.product']);
         });

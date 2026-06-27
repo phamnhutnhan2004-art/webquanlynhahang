@@ -428,8 +428,17 @@
             max-width: 88%;
             border-radius: 8px;
             padding: .65rem .75rem;
-            white-space: pre-line;
             line-height: 1.45;
+            overflow-wrap: anywhere;
+        }
+
+        .chatbot-message p:last-child {
+            margin-bottom: 0;
+        }
+
+        .chatbot-message ul {
+            margin: .35rem 0 0;
+            padding-left: 1.1rem;
         }
 
         .chatbot-message.bot {
@@ -442,6 +451,36 @@
             align-self: flex-end;
             background: var(--green);
             color: #fff;
+        }
+
+        .chatbot-thinking {
+            display: inline-flex;
+            align-items: center;
+            gap: .35rem;
+            color: #7b6752;
+            font-size: .86rem;
+            font-weight: 700;
+        }
+
+        .chatbot-thinking i {
+            width: .42rem;
+            aspect-ratio: 1;
+            border-radius: 50%;
+            background: currentColor;
+            animation: chatbotPulse 1s infinite ease-in-out;
+        }
+
+        .chatbot-thinking i:nth-child(2) {
+            animation-delay: .15s;
+        }
+
+        .chatbot-thinking i:nth-child(3) {
+            animation-delay: .3s;
+        }
+
+        @keyframes chatbotPulse {
+            0%, 80%, 100% { opacity: .35; transform: translateY(0); }
+            40% { opacity: 1; transform: translateY(-3px); }
         }
 
         .chatbot-body {
@@ -498,8 +537,16 @@
             }
         }
     </style>
+    <link href="{{ asset('css/hoa-sen-ui.css') }}?v={{ is_file(public_path('css/hoa-sen-ui.css')) ? filemtime(public_path('css/hoa-sen-ui.css')) : '1' }}" rel="stylesheet">
 </head>
 <body>
+<div class="page-loader" data-page-loader aria-label="Đang tải trang" role="status">
+    <div class="loader-card">
+        <div class="loader-logo"><i class="bi bi-flower1" aria-hidden="true"></i></div>
+        <div class="loader-title">Nhà hàng Hoa Sen</div>
+        <div class="loader-ring" aria-hidden="true"></div>
+    </div>
+</div>
 <nav class="navbar navbar-expand-lg sticky-top">
     <div class="container">
         <a class="navbar-brand" href="{{ route('home') }}">Nhà hàng Hoa Sen</a>
@@ -556,6 +603,10 @@
             <div class="alert alert-success border-0 shadow-sm">{{ session('status') }}</div>
         @endif
 
+        @if(session('error'))
+            <div class="alert alert-danger border-0 shadow-sm">{{ session('error') }}</div>
+        @endif
+
         @if($errors->any())
             <div class="alert alert-danger border-0 shadow-sm">
                 <ul class="mb-0">
@@ -610,6 +661,7 @@
 <button class="chatbot-launcher" type="button" id="chatbotLauncher" aria-label="Mở chatbot">Chat</button>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ asset('js/hoa-sen-ui.js') }}?v={{ is_file(public_path('js/hoa-sen-ui.js')) ? filemtime(public_path('js/hoa-sen-ui.js')) : '1' }}"></script>
 <script>
     (() => {
         const panel = document.getElementById('chatbotPanel');
@@ -627,18 +679,51 @@
 
         localStorage.setItem(sessionKey, sessionId);
 
+        const escapeHtml = (value) => (value || '').toString().replace(/[&<>"']/g, (char) => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;',
+        })[char]);
+
+        const formatMessage = (text) => {
+            const escaped = escapeHtml(text)
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/^- (.*)$/gm, '<li>$1</li>')
+                .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>')
+                .replace(/\n/g, '<br>');
+
+            return escaped;
+        };
+
         const addMessage = (text, sender = 'bot') => {
             const bubble = document.createElement('div');
             bubble.className = `chatbot-message ${sender}`;
-            bubble.textContent = text;
+            bubble.innerHTML = formatMessage(text);
             messages.appendChild(bubble);
             messages.scrollTop = messages.scrollHeight;
+
+            return bubble;
+        };
+
+        const addThinking = () => {
+            const bubble = document.createElement('div');
+            bubble.className = 'chatbot-message bot';
+            bubble.innerHTML = '<span class="chatbot-thinking">AI đang suy nghĩ <i></i><i></i><i></i></span>';
+            messages.appendChild(bubble);
+            messages.scrollTop = messages.scrollHeight;
+
+            return bubble;
         };
 
         const sendPayload = async (payload, visibleText = payload.message) => {
             if (visibleText) {
                 addMessage(visibleText, 'user');
             }
+
+            const thinking = addThinking();
+            form.querySelector('button[type="submit"]').disabled = true;
 
             try {
                 const response = await fetch(endpoint, {
@@ -651,9 +736,14 @@
                 });
 
                 const data = await response.json();
+                thinking.remove();
                 addMessage(data.reply || 'Chatbot chưa nhận được phản hồi phù hợp.');
             } catch (error) {
+                thinking.remove();
                 addMessage('Kết nối chatbot đang gián đoạn. Bạn vui lòng thử lại sau.');
+            } finally {
+                form.querySelector('button[type="submit"]').disabled = false;
+                input.focus();
             }
         };
 

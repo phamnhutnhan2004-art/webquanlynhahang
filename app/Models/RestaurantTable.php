@@ -20,4 +20,14 @@ class RestaurantTable extends Model
     {
         return $this->hasMany(Order::class, 'table_id');
     }
+
+    public function activeOrders(): HasMany
+    {
+        return $this->hasMany(Order::class, 'table_id')->whereIn('status', ['pending', 'serving']);
+    }
+
+    public function bills(): HasMany
+    {
+        return $this->hasMany(Bill::class, 'table_id');
+    }
 }

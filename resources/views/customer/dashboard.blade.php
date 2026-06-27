@@ -108,6 +108,55 @@
         </section>
     </div>
 
+    <section class="section-pad pb-0">
+        <div class="section-title">
+            <div>
+                <div class="eyebrow">Thanh toán</div>
+                <h2 class="h4 mb-0">Đơn hàng của bạn</h2>
+            </div>
+        </div>
+        <div class="card">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Mã đơn</th>
+                            <th>Bàn</th>
+                            <th>Số món</th>
+                            <th>Tổng tiền</th>
+                            <th>Trạng thái</th>
+                            <th class="text-end">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @forelse($orders ?? [] as $order)
+                        <tr>
+                            <td><strong>{{ $order->order_code }}</strong></td>
+                            <td>{{ $order->table?->table_name ?? 'Khách mang đi' }}</td>
+                            <td>{{ $order->items->sum('quantity') }}</td>
+                            <td class="fw-bold">{{ number_format((float) $order->total_amount, 0, ',', '.') }} VNĐ</td>
+                            <td><span class="status-badge">{{ $order->bill ? 'Đã thanh toán' : 'Chờ thanh toán' }}</span></td>
+                            <td class="text-end">
+                                @if($order->bill)
+                                    <a class="btn btn-outline-primary btn-sm" href="{{ route('customer.bills.show', $order->bill) }}">
+                                        <i class="bi bi-printer" aria-hidden="true"></i> Xem hóa đơn
+                                    </a>
+                                @else
+                                    <a class="btn btn-primary btn-sm" href="{{ route('customer.orders.checkout', $order) }}">
+                                        <i class="bi bi-credit-card" aria-hidden="true"></i> Thanh toán
+                                    </a>
+                                @endif
+                            </td>
+                        </tr>
+                    @empty
+                        <tr><td colspan="6" class="text-muted">Bạn chưa có đơn hàng cần thanh toán.</td></tr>
+                    @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
     <section class="section-pad">
         <div class="section-title">
             <div>

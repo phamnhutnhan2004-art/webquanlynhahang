@@ -212,7 +212,7 @@
                     </div>
                     <div class="store-contact-item">
                         <i class="bi bi-globe2" aria-hidden="true"></i>
-                        <div>Website: <a href="https://amthucaosen.com/" target="_blank" rel="noopener">https://amthucaosen.com/</a></div>
+                        <div>Website: <a href="https://nhahanghoasen.com/" target="_blank" rel="noopener">https://nhahanghoasen.com/</a></div>
                     </div>
                     <div class="store-contact-item">
                         <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
