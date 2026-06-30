@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\EmailVerificationOtpMail;
 use App\Models\Customer;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -10,8 +11,10 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
+use Throwable;
 
 class AuthController extends Controller
 {
@@ -40,6 +43,26 @@ class AuthController extends Controller
                 ->withErrors(['login' => 'Email, số điện thoại hoặc mật khẩu không đúng.']);
         }
 
+        $user = Auth::user();
+
+        if ($user?->isLocked()) {
+            Auth::logout();
+            $request->session()->regenerateToken();
+
+            return back()
+                ->withInput($request->only('login'))
+                ->withErrors(['login' => 'Tài khoản của bạn đang bị khóa. Vui lòng liên hệ quản trị viên.']);
+        }
+
+        if ($user?->isCustomer() && ! $user->email_verified_at) {
+            Auth::logout();
+            $request->session()->regenerateToken();
+
+            return redirect()
+                ->route('verification.notice', ['email' => $user->email])
+                ->withErrors(['login' => 'Vui lòng xác thực email trước khi đăng nhập.']);
+        }
+
         $request->session()->regenerate();
 
         return redirect()->intended($this->redirectPath());
@@ -60,32 +83,122 @@ class AuthController extends Controller
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ], $this->messages());
 
-        $user = DB::transaction(function () use ($data): User {
-            $user = User::create([
-                'name' => $data['name'],
-                'full_name' => $data['name'],
-                'email' => $data['email'],
-                'phone' => $data['phone'],
-                'address' => $data['address'] ?? null,
-                'password' => Hash::make($data['password']),
-                'role_id' => 3,
-            ]);
+        try {
+            $user = DB::transaction(function () use ($data): User {
+                $user = User::create([
+                    'name' => $data['name'],
+                    'full_name' => $data['name'],
+                    'email' => $data['email'],
+                    'email_verified_at' => null,
+                    'phone' => $data['phone'],
+                    'address' => $data['address'] ?? null,
+                    'password' => Hash::make($data['password']),
+                    'role_id' => 3,
+                ]);
 
-            Customer::create([
-                'user_id' => $user->id,
-                'full_name' => $data['name'],
-                'phone' => $data['phone'],
-                'email' => $data['email'],
-                'address' => $data['address'] ?? null,
-            ]);
+                Customer::create([
+                    'user_id' => $user->id,
+                    'full_name' => $data['name'],
+                    'phone' => $data['phone'],
+                    'email' => $data['email'],
+                    'address' => $data['address'] ?? null,
+                ]);
 
-            return $user;
-        });
+                $this->sendVerificationOtp($user);
 
-        Auth::login($user);
-        $request->session()->regenerate();
+                return $user;
+            });
+        } catch (Throwable $exception) {
+            report($exception);
 
-        return redirect()->route('customer.dashboard')->with('status', 'Đăng ký tài khoản thành công.');
+            return back()
+                ->withInput($request->except(['password', 'password_confirmation']))
+                ->withErrors(['email' => 'Không gửi được email xác thực. Vui lòng kiểm tra cấu hình SMTP và thử lại.']);
+        }
+
+        $request->session()->put('verification_email', $user->email);
+
+        return redirect()
+            ->route('verification.notice', ['email' => $user->email])
+            ->with('status', 'Mã xác thực đã được gửi đến email của bạn.');
+    }
+
+    public function showVerifyEmail(Request $request): View|RedirectResponse
+    {
+        $email = (string) ($request->query('email') ?: $request->session()->get('verification_email'));
+
+        if ($email === '') {
+            return redirect()->route('register');
+        }
+
+        $request->session()->put('verification_email', $email);
+
+        return view('auth.verify-email', ['email' => $email]);
+    }
+
+    public function verifyEmail(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'email' => ['required', 'email', 'exists:users,email'],
+            'otp_code' => ['required', 'digits:6'],
+        ], $this->messages());
+
+        $user = User::where('email', $data['email'])->firstOrFail();
+
+        if ($user->email_verified_at) {
+            return redirect()->route('login')->with('status', 'Email đã được xác thực. Vui lòng đăng nhập.');
+        }
+
+        if (! $user->otp_code || ! $user->otp_expired_at || $user->otp_expired_at->isPast()) {
+            return back()
+                ->withInput($request->only('email'))
+                ->withErrors(['otp_code' => 'Mã xác thực đã hết hạn. Vui lòng gửi lại mã xác thực.']);
+        }
+
+        if (! hash_equals($user->otp_code, $data['otp_code'])) {
+            return back()
+                ->withInput($request->only('email'))
+                ->withErrors(['otp_code' => 'Mã xác thực không đúng.']);
+        }
+
+        $user->forceFill([
+            'email_verified_at' => Carbon::now(),
+            'otp_code' => null,
+            'otp_expired_at' => null,
+        ])->save();
+
+        $request->session()->forget('verification_email');
+
+        return redirect()->route('login')->with('status', 'Xác thực email thành công. Vui lòng đăng nhập.');
+    }
+
+    public function resendVerificationOtp(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'email' => ['required', 'email', 'exists:users,email'],
+        ], $this->messages());
+
+        $user = User::where('email', $data['email'])->firstOrFail();
+
+        if ($user->email_verified_at) {
+            return redirect()->route('login')->with('status', 'Email đã được xác thực. Vui lòng đăng nhập.');
+        }
+
+        try {
+            DB::transaction(function () use ($user): void {
+                $this->sendVerificationOtp($user);
+            });
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return back()
+                ->withInput($request->only('email'))
+                ->withErrors(['email' => 'Không gửi được mã xác thực. Vui lòng kiểm tra cấu hình SMTP và thử lại.']);
+        }
+
+        $request->session()->put('verification_email', $user->email);
+
+        return back()->with('status', 'Mã xác thực mới đã được gửi đến email của bạn.');
     }
 
     public function showForgotPassword(): View
@@ -155,6 +268,18 @@ class AuthController extends Controller
         return redirect()->route('login')->with('status', 'Đăng xuất thành công.');
     }
 
+    private function sendVerificationOtp(User $user): void
+    {
+        $otpCode = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+
+        $user->forceFill([
+            'otp_code' => $otpCode,
+            'otp_expired_at' => Carbon::now()->addMinutes(5),
+        ])->save();
+
+        Mail::to($user->email)->send(new EmailVerificationOtpMail($user->name ?: $user->full_name, $otpCode));
+    }
+
     private function redirectPath(): string
     {
         $user = Auth::user();
@@ -178,6 +303,7 @@ class AuthController extends Controller
             'unique' => ':attribute đã tồn tại trong hệ thống.',
             'exists' => ':attribute không tồn tại trong hệ thống.',
             'confirmed' => 'Xác nhận :attribute không khớp.',
+            'digits' => ':attribute phải gồm đúng :digits chữ số.',
             'min' => ':attribute phải có ít nhất :min ký tự.',
             'max' => ':attribute không được vượt quá :max ký tự.',
             'attributes.email' => 'Email',
@@ -186,6 +312,7 @@ class AuthController extends Controller
             'attributes.name' => 'Họ và tên',
             'attributes.phone' => 'Số điện thoại',
             'attributes.address' => 'Địa chỉ',
+            'attributes.otp_code' => 'Mã xác thực',
         ];
     }
 }

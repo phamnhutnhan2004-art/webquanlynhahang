@@ -11,6 +11,10 @@ class Reservation extends Model
 {
     protected $fillable = [
         'customer_id',
+        'guest_name',
+        'guest_phone',
+        'guest_email',
+        'customer_type',
         'table_id',
         'employee_id',
         'reservation_code',
@@ -19,9 +23,28 @@ class Reservation extends Model
         'note',
         'source',
         'status',
+        'confirmation_sent_at',
     ];
 
-    protected $casts = ['reservation_time' => 'datetime'];
+    protected $casts = [
+        'reservation_time' => 'datetime',
+        'confirmation_sent_at' => 'datetime',
+    ];
+
+    public function customerName(): string
+    {
+        return $this->customer?->full_name ?: (string) $this->guest_name;
+    }
+
+    public function customerPhone(): string
+    {
+        return $this->customer?->phone ?: (string) $this->guest_phone;
+    }
+
+    public function customerEmail(): ?string
+    {
+        return $this->customer?->email ?: $this->guest_email;
+    }
 
     public function customer(): BelongsTo
     {

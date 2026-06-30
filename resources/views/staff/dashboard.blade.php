@@ -177,7 +177,10 @@
                                         <strong>{{ $reservation->reservation_code }}</strong>
                                         <div class="small text-muted">{{ $reservation->table?->table_name ?? 'Chưa chọn bàn' }}</div>
                                     </td>
-                                    <td>{{ $reservation->customer?->full_name }}<div class="small text-muted">{{ $reservation->number_of_guests }} khách</div></td>
+                                    <td>
+                                        {{ $reservation->customerName() ?: '-' }}
+                                        <div class="small text-muted">{{ $reservation->customer_type ?? ($reservation->customer_id ? 'khách thành viên' : 'khách tiềm năng') }} · {{ $reservation->number_of_guests }} khách</div>
+                                    </td>
                                     <td><span class="status-badge">{{ $reservation->status }}</span></td>
                                     <td>
                                         <form method="POST" action="{{ route('staff.reservations.update-status', $reservation) }}" class="d-flex gap-2">

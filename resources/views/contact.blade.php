@@ -19,7 +19,9 @@
 
     .contact-hero p {
         max-width: 720px;
-        color: rgba(255, 255, 255, .84);
+        color: rgba(255, 255, 255, .96);
+        font-weight: 650;
+        line-height: 1.72;
     }
 
     .contact-panel {
@@ -80,6 +82,12 @@
 
     .contact-form-area {
         padding: clamp(1.3rem, 4vw, 2.25rem);
+    }
+
+    .contact-form-area .section-title,
+    .contact-form-area .section-title .eyebrow,
+    .contact-form-area .section-title h2 {
+        color: #111 !important;
     }
 
     .contact-form-area .form-label {
@@ -172,8 +180,16 @@
     .contact-footer-bottom {
         border-top: 1px solid rgba(255, 255, 255, .14);
         padding: .9rem clamp(1.5rem, 4vw, 2.5rem);
-        color: rgba(255, 255, 255, .68);
+        color: rgba(255, 255, 255, .9);
         font-size: .9rem;
+        font-weight: 650;
+    }
+
+    .contact-info-side .text-white-50,
+    .contact-footer .text-white-50 {
+        color: rgba(255, 255, 255, .92) !important;
+        font-weight: 650;
+        line-height: 1.7;
     }
 
     @media (max-width: 991.98px) {
@@ -202,7 +218,7 @@
                 <span class="text-white-50">Liên hệ</span>
             </nav>
 
-            <div class="eyebrow mb-3">Kết nối với nhà hàng</div>
+
             <h1 class="display-4 fw-bold mb-3">LIÊN HỆ NHÀ HÀNG HOA SEN</h1>
             <p class="lead mb-0">Gửi yêu cầu đặt bàn, góp ý dịch vụ hoặc trao đổi về tiệc nhóm. Đội ngũ Hoa Sen sẽ phản hồi nhanh để chuẩn bị trải nghiệm chu đáo nhất cho anh/chị.</p>
         </div>
@@ -253,7 +269,7 @@
                         <div class="contact-form-area">
                             <div class="section-title mb-3">
                                 <div>
-                                    <div class="eyebrow">Gửi liên hệ</div>
+                                    <div class="eyebrow">Gửi liên hệ cho Hoa Sen</div>
                                     <h2 class="h1 mb-0">Nhà hàng có thể hỗ trợ gì cho anh/chị?</h2>
                                 </div>
                             </div>

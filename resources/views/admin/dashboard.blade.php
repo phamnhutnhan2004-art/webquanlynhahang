@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Bảng điều khiển - Quản trị Nhà hàng World')
+@section('title', 'Bảng điều khiển - Quản trị Nhà hàng Hoa Sen')
 
 @php
     $money = fn ($value) => number_format((float) $value, 0, ',', '.').' VNĐ';
@@ -15,7 +15,7 @@
     <div>
         <div class="admin-kicker">Tổng quan vận hành</div>
         <h1 class="admin-title">Bảng điều khiển Admin</h1>
-        <p class="admin-subtitle">Theo dõi nhanh doanh thu, đơn hàng, bàn ăn, khách hàng và các nghiệp vụ chính của Website Quản lý Nhà hàng World.</p>
+        <p class="admin-subtitle">Theo dõi nhanh doanh thu, đơn hàng, bàn ăn, khách hàng và các nghiệp vụ chính của Website Quản lý Nhà hàng Hoa Sen.</p>
     </div>
     <div class="d-flex flex-wrap gap-2">
         <a class="btn btn-primary" href="{{ route('admin.section', 'products') }}"><i class="bi bi-plus-lg me-1"></i>Thêm món</a>

@@ -180,6 +180,10 @@ class ChatbotController extends Controller
 
             $reservation = Reservation::create([
                 'customer_id' => $customer->id,
+                'guest_name' => $customer->full_name,
+                'guest_phone' => $customer->phone,
+                'guest_email' => $customer->email,
+                'customer_type' => $customer->user_id ? 'khách thành viên' : 'khách tiềm năng',
                 'table_id' => $table->id,
                 'reservation_code' => 'AI'.now()->format('YmdHis').Str::upper(Str::random(4)),
                 'reservation_time' => $reservationTime,

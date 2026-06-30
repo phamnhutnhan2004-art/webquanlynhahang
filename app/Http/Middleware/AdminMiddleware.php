@@ -12,7 +12,15 @@ class AdminMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         if (! Auth::check()) {
-            return redirect()->route('login')->withErrors(['email' => 'Vui lòng đăng nhập để tiếp tục.']);
+            return redirect()->route('login')->withErrors(['login' => 'Vui lòng đăng nhập để tiếp tục.']);
+        }
+
+        if (Auth::user()->isLocked()) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()->route('login')->withErrors(['login' => 'Tài khoản của bạn đang bị khóa.']);
         }
 
         if (! Auth::user()->isAdmin()) {

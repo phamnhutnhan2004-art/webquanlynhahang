@@ -22,7 +22,9 @@
 
     .party-hero p {
         max-width: 760px;
-        color: rgba(255, 255, 255, .84);
+        color: rgba(255, 255, 255, .96);
+        font-weight: 650;
+        line-height: 1.72;
     }
 
     .party-hero-actions {
@@ -137,7 +139,9 @@
     }
 
     .party-form-head p {
-        color: rgba(255, 255, 255, .78);
+        color: rgba(255, 255, 255, .94);
+        font-weight: 650;
+        line-height: 1.7;
     }
 
     .party-form-body {
@@ -176,7 +180,17 @@
     }
 
     .party-summary .text-muted {
-        color: rgba(255, 255, 255, .72) !important;
+        color: rgba(255, 255, 255, .92) !important;
+        font-weight: 650;
+    }
+
+    .party-service-card p,
+    .party-combo-card p,
+    .party-food-card p,
+    .party-review p {
+        color: #4a4036 !important;
+        font-weight: 600;
+        line-height: 1.68;
     }
 
     .party-total {

@@ -44,10 +44,36 @@ class Product extends Model
             }
         }
 
-        return match ($this->slug) {
-            'ga-xao-cay' => asset('images/ga-xao-cay.png'),
-            'ca-chep-sot-cai-xanh' => asset('images/ca-chep-sot-cai-xanh.png'),
-            default => asset('images/restaurant-interior.png'),
-        };
+        foreach (['png', 'jpg', 'jpeg', 'webp'] as $extension) {
+            $path = "images/{$this->slug}.{$extension}";
+
+            if (is_file(public_path($path))) {
+                return asset($path);
+            }
+        }
+
+        return $this->fallbackImageUrl();
+    }
+
+    public function getFallbackImageUrlAttribute(): string
+    {
+        return $this->fallbackImageUrl();
+    }
+
+    private function fallbackImageUrl(): string
+    {
+        $slug = (string) $this->slug;
+
+        if (str_contains($slug, 'ga') || str_contains($slug, 'cay') || str_contains($slug, 'ech')) {
+            return asset('images/ga-xao-cay.png');
+        }
+
+        if (str_contains($slug, 'ca') || str_contains($slug, 'hai-san') || str_contains($slug, 'tom')
+            || str_contains($slug, 'cua') || str_contains($slug, 'muc') || str_contains($slug, 'so')
+            || str_contains($slug, 'lau') || str_contains($slug, 'ngheu')) {
+            return asset('images/ca-chep-sot-cai-xanh.png');
+        }
+
+        return asset('images/restaurant-interior.png');
     }
 }

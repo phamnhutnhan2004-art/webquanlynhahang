@@ -20,6 +20,11 @@ class Customer extends Model
         return $this->hasMany(Reservation::class);
     }
 
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
+
     public function bills(): HasMany
     {
         return $this->hasMany(Bill::class);

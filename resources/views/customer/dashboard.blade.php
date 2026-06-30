@@ -161,7 +161,7 @@
         <div class="section-title">
             <div>
                 <div class="eyebrow">Menu Nhà Hàng</div>
-                <h2 class="h4 mb-0">Menu hình ảnh</h2>
+                <h2 class="h4 mb-0">Hình ảnh món ăn</h2>
             </div>
         </div>
         <div class="row g-3">
@@ -184,7 +184,7 @@
                     </div>
                 </div>
             @empty
-                <div class="col-12"><div class="muted-box">Chưa có menu hình ảnh.</div></div>
+                <div class="col-12"><div class="muted-box">Chưa có hình ảnh món ăn.</div></div>
             @endforelse
         </div>
     </section>

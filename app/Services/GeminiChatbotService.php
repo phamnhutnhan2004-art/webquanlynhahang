@@ -251,7 +251,7 @@ Bàn trống có thể tư vấn:
 Phương thức thanh toán đang bật:
 {$paymentMethods}
 
-Menu hình ảnh/tài liệu:
+Hình ảnh món ăn/tài liệu:
 {$menuGalleries}
 
 Đặt tiệc tại nhà:

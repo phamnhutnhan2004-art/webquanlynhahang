@@ -21,14 +21,19 @@
     }
 
     .about-hero h1 {
-        max-width: 760px;
-        font-weight: 900;
-        letter-spacing: .04em;
+        font-weight: 950;
+        letter-spacing: 0;
+    }
+
+    .about-hero nav[aria-label="breadcrumb"] {
+        display: none;
     }
 
     .about-hero .lead {
         max-width: 720px;
-        color: rgba(255, 255, 255, .84);
+        color: rgba(255, 255, 255, .96);
+        font-weight: 650;
+        line-height: 1.72;
     }
 
     .about-toc {
@@ -112,17 +117,6 @@
         border-bottom: 0;
     }
 
-    .about-kicker {
-        display: inline-flex;
-        align-items: center;
-        gap: .5rem;
-        color: var(--green);
-        font-size: .8rem;
-        font-weight: 900;
-        letter-spacing: .08em;
-        text-transform: uppercase;
-    }
-
     .about-icon {
         display: inline-grid;
         place-items: center;
@@ -136,9 +130,10 @@
     }
 
     .about-copy {
-        color: var(--muted);
+        color: rgba(255, 255, 255, .94);
         font-size: 1.06rem;
         line-height: 1.8;
+        font-weight: 600;
     }
 
     .about-feature-list {
@@ -153,7 +148,7 @@
         display: flex;
         align-items: flex-start;
         gap: .65rem;
-        color: var(--wood-dark);
+        color: rgba(255, 255, 255, .94);
         font-weight: 700;
     }
 
@@ -195,13 +190,6 @@
         box-shadow: 0 16px 38px rgba(44, 27, 18, .16);
     }
 
-    .about-soft-panel {
-        padding: clamp(1.25rem, 3vw, 2rem);
-        border: 1px solid rgba(90, 52, 30, .14);
-        border-radius: 8px;
-        background: rgba(255, 255, 255, .7);
-    }
-
     .about-contact {
         background:
             linear-gradient(135deg, rgba(14, 59, 50, .96), rgba(44, 27, 18, .9)),
@@ -214,7 +202,8 @@
 
     .about-contact .about-copy,
     .about-contact a:not(.btn) {
-        color: rgba(255, 255, 255, .84);
+        color: rgba(255, 255, 255, .94);
+        font-weight: 650;
     }
 
     .about-contact-item {
@@ -275,7 +264,6 @@
                 <span class="text-white-50">Giới thiệu</span>
             </nav>
 
-            <div class="eyebrow mb-3">Ẩm thực sân vườn và hải sản tươi sống</div>
             <h1 class="display-3 mb-3">NHÀ HÀNG HOA SEN</h1>
             <p class="lead mb-0">Không gian xanh thoáng mát, món ăn đồng quê đậm vị miền Tây và hải sản được chọn ngay tại bể cho những bữa ăn gia đình, gặp mặt bạn bè và tiệc nhóm trọn vẹn.</p>
         </div>
@@ -310,27 +298,10 @@
                     <div class="d-flex align-items-center gap-3 mb-3">
                         <span class="about-icon"><i class="bi bi-flower1" aria-hidden="true"></i></span>
                         <div>
-                            <div class="about-kicker">Giới thiệu</div>
                             <h2 class="h1 fw-bold mb-0">Nhà hàng Hoa Sen - Chuyên hải sản tươi sống và các món đồng quê.</h2>
                         </div>
                     </div>
                     <p class="about-copy mb-0">Nhà hàng Hoa Sen mang tinh thần ẩm thực Việt gần gũi: nguyên liệu tươi, cách nêm nếm hài hòa và phong cách phục vụ chu đáo. Thực khách có thể dùng bữa trong không gian sân vườn thư thái, chọn món hải sản tại bể và thưởng thức những món đồng quê quen thuộc được trình bày chỉn chu.</p>
-                    <div class="about-soft-panel mt-4">
-                        <div class="row g-3">
-                            <div class="col-sm-4">
-                                <strong class="d-block h3 mb-1 text-success">100%</strong>
-                                <span class="text-muted">Nguyên liệu chọn lọc</span>
-                            </div>
-                            <div class="col-sm-4">
-                                <strong class="d-block h3 mb-1 text-success">5+</strong>
-                                <span class="text-muted">Không gian phục vụ</span>
-                            </div>
-                            <div class="col-sm-4">
-                                <strong class="d-block h3 mb-1 text-success">24/7</strong>
-                                <span class="text-muted">Hỗ trợ đặt bàn online</span>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="col-lg-6">
@@ -350,7 +321,6 @@
                     <div class="d-flex align-items-center gap-3 mb-3">
                         <span class="about-icon"><i class="bi bi-water" aria-hidden="true"></i></span>
                         <div>
-                            <div class="about-kicker">Hải sản tươi sống</div>
                             <h2 class="h1 fw-bold mb-0">Hải sản tươi sống - Chọn ngay tại bể.</h2>
                         </div>
                     </div>
@@ -379,7 +349,6 @@
                     <div class="d-flex align-items-center gap-3 mb-3">
                         <span class="about-icon"><i class="bi bi-basket2-fill" aria-hidden="true"></i></span>
                         <div>
-                            <div class="about-kicker">Món ăn đồng quê</div>
                             <h2 class="h1 fw-bold mb-0">Món ăn đồng quê - Hương vị miền Tây.</h2>
                         </div>
                     </div>
@@ -408,7 +377,6 @@
                     <div class="d-flex align-items-center gap-3 mb-3">
                         <span class="about-icon"><i class="bi bi-tree-fill" aria-hidden="true"></i></span>
                         <div>
-                            <div class="about-kicker">Không gian sân vườn</div>
                             <h2 class="h1 fw-bold mb-0">Không gian sân vườn thoáng mát.</h2>
                         </div>
                     </div>
@@ -435,7 +403,6 @@
             <div class="about-contact">
                 <div class="row align-items-center g-4">
                     <div class="col-lg-7">
-                        <div class="about-kicker text-warning mb-2"><i class="bi bi-telephone-outbound-fill" aria-hidden="true"></i> Liên hệ và đặt bàn</div>
                         <h2 class="h1 fw-bold mb-3">Liên hệ ngay để đặt bàn.</h2>
                         <p class="about-copy mb-0">Đội ngũ Nhà hàng Hoa Sen luôn sẵn sàng tư vấn món ăn, giữ bàn theo khung giờ phù hợp và hỗ trợ chuẩn bị không gian cho bữa ăn của bạn.</p>
                     </div>
@@ -462,11 +429,7 @@
                             </div>
                         </div>
 
-                        @guest
-                            <a class="btn btn-primary btn-lg w-100 mt-3" href="{{ route('register') }}">Đặt bàn ngay</a>
-                        @else
-                            <a class="btn btn-primary btn-lg w-100 mt-3" href="{{ auth()->user()->isCustomer() ? route('customer.dashboard') : route('home') }}">Đặt bàn ngay</a>
-                        @endguest
+                        <a class="btn btn-primary btn-lg w-100 mt-3" href="{{ route('reservations.create') }}">Đặt bàn ngay</a>
                     </div>
                 </div>
             </div>

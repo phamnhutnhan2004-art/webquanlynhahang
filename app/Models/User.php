@@ -16,15 +16,20 @@ class User extends Authenticatable
         'role_id',
         'full_name',
         'email',
+        'email_verified_at',
         'phone',
         'address',
         'password',
+        'otp_code',
+        'otp_expired_at',
         'status',
     ];
 
     protected $hidden = ['password', 'remember_token'];
 
     protected $casts = [
+        'email_verified_at' => 'datetime',
+        'otp_expired_at' => 'datetime',
         'password' => 'hashed',
     ];
 
@@ -56,5 +61,10 @@ class User extends Authenticatable
     public function isCustomer(): bool
     {
         return (int) $this->role_id === 3;
+    }
+
+    public function isLocked(): bool
+    {
+        return $this->status === 'tạm khóa';
     }
 }

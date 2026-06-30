@@ -3,7 +3,10 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'Quản trị - Website Quản lý Nhà hàng World')</title>
+    <title>@yield('title', 'Quản trị - Website Quản lý Nhà hàng Hoa Sen')</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700;800;900&family=Inter:wght@400;600;700;800;900&family=Montserrat:wght@400;600;700;800;900&family=Open+Sans:wght@400;600;700;800&family=Poppins:wght@400;600;700;800;900&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <style>
@@ -14,7 +17,7 @@
             --admin-sidebar-deep: #092721;
             --admin-accent: #d9a441;
             --admin-ink: #17201d;
-            --admin-muted: #6f7a76;
+            --admin-muted: #4f5b56;
             --admin-line: #e3e8ee;
             --admin-blue: #2563eb;
             --admin-coral: #e76f51;
@@ -29,6 +32,17 @@
             background: var(--admin-bg);
             color: var(--admin-ink);
             font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.58;
+        }
+
+        p,
+        li {
+            line-height: 1.68;
+        }
+
+        .text-muted {
+            color: var(--admin-muted) !important;
+            font-weight: 650;
         }
 
         a { text-decoration: none; }
@@ -77,7 +91,7 @@
         }
 
         .admin-brand-subtitle {
-            color: rgba(255, 255, 255, .68);
+            color: rgba(255, 255, 255, .9);
             font-size: .78rem;
             font-weight: 700;
         }
@@ -95,7 +109,7 @@
             min-height: 42px;
             padding: .58rem .75rem;
             border-radius: var(--admin-radius);
-            color: rgba(255, 255, 255, .82);
+            color: rgba(255, 255, 255, .92);
             font-weight: 750;
             font-size: .92rem;
         }
@@ -181,6 +195,7 @@
             background: var(--admin-panel);
             border: 1px solid var(--admin-line);
             border-radius: var(--admin-radius);
+            color: var(--admin-ink);
             box-shadow: var(--admin-shadow);
         }
 
@@ -234,7 +249,7 @@
 
         .stat-label {
             color: var(--admin-muted);
-            font-weight: 800;
+            font-weight: 850;
             font-size: .86rem;
         }
 
@@ -266,7 +281,7 @@
             height: 100%;
             color: var(--admin-muted);
             font-size: .78rem;
-            font-weight: 800;
+            font-weight: 850;
         }
 
         .chart-fill {
@@ -299,7 +314,7 @@
             gap: 1rem;
             color: var(--admin-muted);
             font-size: .88rem;
-            font-weight: 800;
+            font-weight: 850;
         }
 
         .progress-track {
@@ -354,6 +369,22 @@
             white-space: nowrap;
         }
 
+        .table-status-form {
+            display: grid;
+            grid-template-columns: minmax(145px, 1fr) 38px;
+            gap: .4rem;
+            align-items: center;
+            min-width: 205px;
+        }
+
+        .table-status-form .btn {
+            width: 38px;
+            aspect-ratio: 1;
+            padding: 0;
+            display: inline-grid;
+            place-items: center;
+        }
+
         .avatar {
             width: 42px;
             aspect-ratio: 1;
@@ -379,7 +410,8 @@
             border-radius: var(--admin-radius);
             background: #fbfcfe;
             color: var(--admin-muted);
-            font-weight: 700;
+            font-weight: 750;
+            line-height: 1.65;
         }
 
         @media (max-width: 1199.98px) {
@@ -438,16 +470,19 @@
         ['label' => 'Quản lý đặt bàn', 'icon' => 'bi-calendar-check', 'route' => route('admin.section', 'reservations'), 'active' => request()->is('admin/reservations')],
         ['label' => 'Quản lý đặt tiệc tại nhà', 'icon' => 'bi-stars', 'route' => route('admin.section', 'home-parties'), 'active' => request()->is('admin/home-parties')],
         ['label' => 'Quản lý đơn hàng', 'icon' => 'bi-receipt-cutoff', 'route' => route('admin.section', 'orders'), 'active' => request()->is('admin/orders')],
+        ['label' => 'Quản lý tài khoản', 'icon' => 'bi-person-gear', 'route' => route('admin.section', 'accounts'), 'active' => request()->is('admin/accounts')],
         ['label' => 'Quản lý khách hàng', 'icon' => 'bi-people', 'route' => route('admin.section', 'customers'), 'active' => request()->is('admin/customers')],
         ['label' => 'Quản lý nhân viên', 'icon' => 'bi-person-badge', 'route' => route('admin.section', 'employees'), 'active' => request()->is('admin/employees')],
         ['label' => 'Quản lý thanh toán', 'icon' => 'bi-credit-card-2-front', 'route' => route('admin.section', 'payments'), 'active' => request()->is('admin/payments')],
         ['label' => 'Quản lý phương thức thanh toán', 'icon' => 'bi-qr-code', 'route' => route('admin.section', 'payment-methods'), 'active' => request()->is('admin/payment-methods')],
         ['label' => 'Quản lý Chatbot', 'icon' => 'bi-robot', 'route' => route('admin.section', 'chatbot'), 'active' => request()->is('admin/chatbot')],
         ['label' => 'Cấu hình AI Chatbot', 'icon' => 'bi-cpu', 'route' => route('admin.section', 'ai-chatbot'), 'active' => request()->is('admin/ai-chatbot')],
+        ['label' => 'Cài đặt giao diện', 'icon' => 'bi-palette', 'route' => route('admin.section', 'theme-settings'), 'active' => request()->is('admin/theme-settings')],
+        ['label' => 'Giao diện đăng nhập', 'icon' => 'bi-window-sidebar', 'route' => route('admin.section', 'auth-interface'), 'active' => request()->is('admin/auth-interface')],
         ['label' => 'Quản lý thư viện ảnh', 'icon' => 'bi-images', 'route' => route('admin.section', 'gallery-images'), 'active' => request()->is('admin/gallery-images')],
         ['label' => 'Quản lý tin tức', 'icon' => 'bi-newspaper', 'route' => route('admin.section', 'news'), 'active' => request()->is('admin/news')],
         ['label' => 'Thống kê và báo cáo', 'icon' => 'bi-graph-up-arrow', 'route' => route('admin.section', 'stats'), 'active' => request()->is('admin/stats')],
-        ['label' => 'Cài đặt hệ thống', 'icon' => 'bi-gear', 'route' => route('admin.section', 'settings'), 'active' => request()->is('admin/settings')],
+        ['label' => 'Tài khoản của tôi', 'icon' => 'bi-person-circle', 'route' => route('account.show'), 'active' => request()->routeIs('account.*')],
     ];
 @endphp
 
@@ -457,7 +492,7 @@
         <div class="admin-brand">
             <div class="admin-brand-mark"><i class="bi bi-shop"></i></div>
             <div>
-                <div class="admin-brand-title">Nhà hàng World</div>
+                <div class="admin-brand-title">Nhà hàng Hoa Sen</div>
                 <div class="admin-brand-subtitle">Bảng quản trị</div>
             </div>
         </div>
@@ -488,7 +523,7 @@
                 </button>
                 <div>
                     <div class="fw-black fw-bold">Quản trị hệ thống</div>
-                    <div class="small text-muted">Website Quản lý Nhà hàng World</div>
+                    <div class="small text-muted">Website Quản lý Nhà hàng Hoa Sen</div>
                 </div>
             </div>
 
@@ -538,7 +573,7 @@
         </main>
 
         <footer class="admin-footer">
-            © {{ date('Y') }} Website Quản lý Nhà hàng World. Giao diện quản trị tối ưu cho vận hành nhà hàng.
+            © {{ date('Y') }} Website Quản lý Nhà hàng Hoa Sen. Giao diện quản trị tối ưu cho vận hành nhà hàng.
         </footer>
     </div>
 </div>
@@ -577,7 +612,7 @@
             const table = scope.querySelector('table');
             const tbody = table?.querySelector('tbody');
             const search = scope.querySelector('[data-table-search]');
-            const filter = scope.querySelector('[data-table-filter]');
+            const filters = Array.from(scope.querySelectorAll('[data-table-filter]'));
             const pageSize = scope.querySelector('[data-table-size]');
             const pager = scope.querySelector('[data-table-pager]');
             const rows = Array.from(tbody?.querySelectorAll('tr') || []);
@@ -589,12 +624,17 @@
 
             const render = () => {
                 const keyword = normalize(search?.value);
-                const status = filter?.value || '';
                 const limit = Number(pageSize?.value || 10);
                 let visible = rows.filter((row) => {
                     const matchesSearch = !keyword || normalize(row.innerText).includes(keyword);
-                    const matchesFilter = !status || row.dataset.status === status;
-                    return matchesSearch && matchesFilter;
+                    const matchesFilters = filters.every((filter) => {
+                        const value = filter.value || '';
+                        const key = filter.dataset.filterKey || 'status';
+
+                        return !value || row.dataset[key] === value;
+                    });
+
+                    return matchesSearch && matchesFilters;
                 });
 
                 if (sortIndex >= 0) {
@@ -641,7 +681,7 @@
                 });
             });
 
-            [search, filter, pageSize].forEach((input) => input?.addEventListener('input', () => {
+            [search, pageSize, ...filters].forEach((input) => input?.addEventListener('input', () => {
                 currentPage = 1;
                 render();
             }));

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ReservationConfirmationMail;
 use App\Models\Category;
 use App\Models\ChatbotLog;
 use App\Models\AiChatbotSetting;
@@ -18,11 +19,19 @@ use App\Models\PaymentMethod;
 use App\Models\Product;
 use App\Models\Reservation;
 use App\Models\RestaurantTable;
+use App\Models\ThemeSetting;
+use App\Models\Role;
+use App\Models\User;
+use App\Models\WebsitePageSetting;
+use Illuminate\Support\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
@@ -33,15 +42,130 @@ class DashboardController extends Controller
         return view('home', [
             'products' => Product::with('category:id,name')
                 ->where('status', 'available')
+                ->whereHas('category', fn ($query) => $query->where('status', 'hiển thị'))
                 ->latest()
                 ->limit(6)
                 ->get(),
-            'categories' => Category::withCount('products')->get(),
+            'categories' => $this->visibleMenuCategories(),
             'totalProducts' => Product::where('status', 'available')->count(),
             'availableTables' => RestaurantTable::where('status', 'trống')->count(),
             'totalReservations' => Reservation::count(),
             'menuGalleries' => MenuGallery::latest()->limit(4)->get(),
             'galleryImages' => GalleryImage::latest()->limit(6)->get(),
+        ]);
+    }
+
+    public function menu(Request $request): View
+    {
+        $categories = $this->visibleMenuCategories();
+
+        $products = Product::with('category:id,name')
+            ->where('status', 'available')
+            ->whereHas('category', fn ($query) => $query->where('status', 'hiển thị'))
+            ->when($request->filled('category'), function ($query) use ($request, $categories) {
+                $category = $categories->first(fn (Category $item) => $item->menu_slug === $request->query('category'));
+
+                if ($category) {
+                    $query->where('category_id', $category->id);
+                }
+            })
+            ->when($request->filled('q'), function ($query) use ($request) {
+                $keyword = trim((string) $request->query('q'));
+
+                $query->where(function ($query) use ($keyword) {
+                    $query->where('name', 'like', "%{$keyword}%")
+                        ->orWhere('description', 'like', "%{$keyword}%")
+                        ->orWhereHas('category', fn ($query) => $query->where('name', 'like', "%{$keyword}%"));
+                });
+            })
+            ->when($request->query('sort') === 'price_asc', fn ($query) => $query->orderBy('price'))
+            ->when($request->query('sort') === 'price_desc', fn ($query) => $query->orderByDesc('price'))
+            ->when($request->query('sort') === 'name', fn ($query) => $query->orderBy('name'))
+            ->when(! in_array($request->query('sort'), ['price_asc', 'price_desc', 'name'], true), fn ($query) => $query->latest())
+            ->paginate(12)
+            ->withQueryString();
+
+        return view('menu', [
+            'categories' => $categories,
+            'products' => $products,
+            'selectedCategory' => $request->query('category', ''),
+            'selectedSort' => $request->query('sort', 'latest'),
+            'searchTerm' => $request->query('q', ''),
+        ]);
+    }
+
+    public function gallery(): View
+    {
+        return view('gallery', [
+            'menuGalleries' => MenuGallery::latest()->get(),
+            'galleryImages' => GalleryImage::latest()->get(),
+        ]);
+    }
+
+    public function booking(): View
+    {
+        return view('reservations.create', [
+            'tables' => RestaurantTable::where('status', 'trống')->orderBy('area')->orderBy('table_code')->get(),
+            'reservationEmailRequired' => $this->reservationEmailRequired(),
+        ]);
+    }
+
+    public function menuCategory(Request $request, string $categorySlug): View
+    {
+        $categories = $this->visibleMenuCategories();
+        $category = $categories->first(fn (Category $item) => $item->menu_slug === $categorySlug);
+
+        abort_unless($category, 404);
+
+        $products = $category->products()
+            ->with('category:id,name')
+            ->where('status', 'available')
+            ->when($request->filled('q'), function ($query) use ($request) {
+                $keyword = trim((string) $request->query('q'));
+
+                $query->where(function ($query) use ($keyword) {
+                    $query->where('name', 'like', "%{$keyword}%")
+                        ->orWhere('description', 'like', "%{$keyword}%");
+                });
+            })
+            ->when($request->query('sort') === 'price_asc', fn ($query) => $query->orderBy('price'))
+            ->when($request->query('sort') === 'price_desc', fn ($query) => $query->orderByDesc('price'))
+            ->when($request->query('sort') === 'name', fn ($query) => $query->orderBy('name'))
+            ->when(! in_array($request->query('sort'), ['price_asc', 'price_desc', 'name'], true), fn ($query) => $query->latest())
+            ->paginate(9)
+            ->withQueryString();
+
+        $bannerProduct = (clone $category->products())
+            ->where('status', 'available')
+            ->whereNotNull('image')
+            ->latest()
+            ->first();
+
+        return view('menu-category', [
+            'category' => $category,
+            'categories' => $categories,
+            'products' => $products,
+            'bannerImage' => $bannerProduct?->image_url ?? asset('images/restaurant-interior.png'),
+            'selectedSort' => $request->query('sort', 'latest'),
+            'searchTerm' => $request->query('q', ''),
+        ]);
+    }
+
+    public function productDetail(Product $product): View
+    {
+        abort_unless($product->status === 'available' && $product->category?->status === 'hiển thị', 404);
+
+        $product->load('category');
+
+        return view('product-detail', [
+            'product' => $product,
+            'relatedProducts' => Product::with('category:id,name')
+                ->where('status', 'available')
+                ->where('category_id', $product->category_id)
+                ->whereKeyNot($product->id)
+                ->latest()
+                ->limit(3)
+                ->get(),
         ]);
     }
 
@@ -122,6 +246,7 @@ class DashboardController extends Controller
     {
         abort_unless(in_array($section, [
             'employees',
+            'accounts',
             'products',
             'categories',
             'tables',
@@ -133,14 +258,19 @@ class DashboardController extends Controller
             'payment-methods',
             'chatbot',
             'ai-chatbot',
+            'theme-settings',
+            'auth-interface',
             'menu-galleries',
             'gallery-images',
             'news',
-            'settings',
             'stats',
         ], true), 404);
 
         $data = match ($section) {
+            'accounts' => [
+                'items' => User::with(['role', 'customer.reservations', 'customer.orders.bill', 'customer.bills', 'employee.orders', 'employee.bills'])->latest()->get(),
+                'roles' => Role::orderBy('id')->get(),
+            ],
             'employees' => ['items' => Employee::with('user')->get()],
             'products' => [
                 'items' => Product::with('category')->latest()->get(),
@@ -155,6 +285,15 @@ class DashboardController extends Controller
             'payment-methods' => ['items' => PaymentMethod::withCount('bills')->orderBy('sort_order')->orderBy('id')->get()],
             'chatbot' => ['items' => ChatbotLog::with(['customer', 'reservation', 'order'])->latest()->get()],
             'ai-chatbot' => ['items' => collect(), 'aiSetting' => AiChatbotSetting::current()],
+            'theme-settings' => [
+                'items' => collect(),
+                'themeSetting' => ThemeSetting::current(),
+                'pageThemeOptions' => WebsitePageSetting::PAGE_OPTIONS,
+            ],
+            'auth-interface' => [
+                'items' => collect(),
+                'authPageSetting' => WebsitePageSetting::current('auth'),
+            ],
             'home-parties' => [
                 'items' => HomeParty::with(['details.food.category', 'assignedEmployee.user'])->latest()->get(),
                 'employees' => Employee::with('user')->where('status', 'đang làm')->orderBy('employee_code')->get(),
@@ -163,7 +302,6 @@ class DashboardController extends Controller
             'menu-galleries' => ['items' => MenuGallery::latest()->get()],
             'gallery-images' => ['items' => GalleryImage::latest()->get()],
             'news' => ['items' => collect()],
-            'settings' => ['items' => collect()],
             'stats' => [
                 'revenueByDay' => Payment::query()
                     ->select(DB::raw('DATE(created_at) as date'), DB::raw('SUM(total_amount) as revenue'))
@@ -333,6 +471,17 @@ class DashboardController extends Controller
         return back()->with('status', 'Đã cập nhật bàn ăn.');
     }
 
+    public function updateTableStatus(Request $request, RestaurantTable $table): RedirectResponse
+    {
+        $data = $request->validate([
+            'status' => ['required', Rule::in(['trống', 'đã đặt', 'đang sử dụng', 'đang dọn dẹp'])],
+        ]);
+
+        $table->update(['status' => $data['status']]);
+
+        return back()->with('status', 'Đã cập nhật trạng thái bàn.');
+    }
+
     public function destroyTable(RestaurantTable $table): RedirectResponse
     {
         if ($table->reservations()->exists() || $table->orders()->exists()) {
@@ -440,6 +589,131 @@ class DashboardController extends Controller
 
     public function reserve(Request $request): RedirectResponse
     {
+        $user = $request->user();
+        $emailRequired = $this->reservationEmailRequired();
+
+        $data = $request->validate([
+            'full_name' => [$user ? 'nullable' : 'required', 'string', 'max:150'],
+            'phone' => [$user ? 'nullable' : 'required', 'string', 'max:30'],
+            'email' => [Rule::requiredIf(! $user && $emailRequired), 'nullable', 'email', 'max:150'],
+            'table_id' => ['nullable', Rule::exists('tables', 'id')->where('status', 'trống')],
+            'reservation_date' => ['nullable', 'required_without:reservation_time', 'date'],
+            'reservation_hour' => ['nullable', 'required_without:reservation_time', 'date_format:H:i'],
+            'reservation_time' => ['nullable', 'date'],
+            'number_of_guests' => ['required', 'integer', 'min:1', 'max:30'],
+            'note' => ['nullable', 'string', 'max:255'],
+        ], [], [
+            'full_name' => 'họ và tên',
+            'phone' => 'số điện thoại',
+            'email' => 'email',
+            'reservation_date' => 'ngày đặt',
+            'reservation_hour' => 'giờ đặt',
+            'reservation_time' => 'thời gian đặt',
+            'number_of_guests' => 'số lượng khách',
+        ]);
+
+        $reservationTime = $this->reservationTimeFromRequest($data);
+
+        if ($reservationTime->lessThanOrEqualTo(now())) {
+            throw ValidationException::withMessages([
+                'reservation_date' => 'Thời gian đặt bàn cần ở tương lai.',
+            ]);
+        }
+
+        $reservation = DB::transaction(function () use ($data, $user, $reservationTime): Reservation {
+            $customer = null;
+
+            if ($user?->isCustomer()) {
+                $customer = $user->customer ?: Customer::create([
+                    'user_id' => $user->id,
+                    'full_name' => $user->name ?? $user->full_name,
+                    'phone' => $user->phone,
+                    'email' => $user->email,
+                    'address' => $user->address,
+                ]);
+            }
+
+            $guestName = $customer?->full_name ?: trim((string) ($data['full_name'] ?? ($user?->name ?? $user?->full_name ?? '')));
+            $guestPhone = $customer?->phone ?: trim((string) ($data['phone'] ?? $user?->phone ?? ''));
+            $guestEmail = $customer?->email ?: trim((string) ($data['email'] ?? $user?->email ?? '')) ?: null;
+
+            $table = null;
+            if (! empty($data['table_id'])) {
+                $table = RestaurantTable::whereKey($data['table_id'])
+                    ->where('status', 'trống')
+                    ->lockForUpdate()
+                    ->first();
+
+                if (! $table) {
+                    throw ValidationException::withMessages([
+                        'table_id' => 'Bàn đã được đặt hoặc không còn trống. Vui lòng chọn bàn khác.',
+                    ]);
+                }
+            }
+
+            $reservation = Reservation::create([
+                'customer_id' => $customer?->id,
+                'guest_name' => $guestName,
+                'guest_phone' => $guestPhone,
+                'guest_email' => $guestEmail,
+                'customer_type' => $customer ? 'khách thành viên' : 'khách tiềm năng',
+                'table_id' => $table?->id,
+                'reservation_code' => 'DB'.now()->format('YmdHis').Str::upper(Str::random(4)),
+                'reservation_time' => $reservationTime,
+                'number_of_guests' => $data['number_of_guests'],
+                'note' => $data['note'] ?? null,
+                'source' => 'website',
+                'status' => 'chờ xác nhận',
+            ]);
+
+            if ($table) {
+                $table->update(['status' => 'đã đặt']);
+            }
+
+            return $reservation->load(['customer', 'table']);
+        });
+
+        $this->sendReservationConfirmation($reservation);
+
+        return back()->with('status', 'Đặt bàn thành công. Nhân viên sẽ xác nhận sớm.');
+    }
+
+    private function reservationEmailRequired(): bool
+    {
+        return filter_var(env('RESERVATION_EMAIL_REQUIRED', false), FILTER_VALIDATE_BOOL);
+    }
+
+    private function reservationTimeFromRequest(array $data): Carbon
+    {
+        if (! empty($data['reservation_time'])) {
+            return Carbon::parse($data['reservation_time']);
+        }
+
+        return Carbon::parse($data['reservation_date'].' '.$data['reservation_hour']);
+    }
+
+    private function sendReservationConfirmation(Reservation $reservation): void
+    {
+        $email = $reservation->customerEmail();
+
+        if (! $email) {
+            return;
+        }
+
+        try {
+            Mail::to($email)->send(new ReservationConfirmationMail($reservation));
+            $reservation->update(['confirmation_sent_at' => now()]);
+        } catch (\Throwable $exception) {
+            Log::warning('Khong gui duoc email xac nhan dat ban.', [
+                'reservation_id' => $reservation->id,
+                'email' => $email,
+                'error' => $exception->getMessage(),
+            ]);
+        }
+    }
+
+    private function reserveLegacy(Request $request): RedirectResponse
+    {
         $data = $request->validate([
             'table_id' => ['nullable', Rule::exists('tables', 'id')->where('status', 'trống')],
             'reservation_time' => ['required', 'date', 'after:now'],
@@ -501,6 +775,16 @@ class DashboardController extends Controller
         }
 
         return $slug;
+    }
+
+    private function visibleMenuCategories()
+    {
+        return Category::query()
+            ->where('status', 'hiển thị')
+            ->whereHas('products', fn ($query) => $query->where('status', 'available'))
+            ->withCount(['products as products_count' => fn ($query) => $query->where('status', 'available')])
+            ->orderBy('name')
+            ->get();
     }
 
     private function deleteStoredFile(?string $path): void
